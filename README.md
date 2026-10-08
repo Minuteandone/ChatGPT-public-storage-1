@@ -31,6 +31,14 @@ Use descriptive names and create project folders only when needed. Each project'
 3. Public materials can also be mirrored into private companion storage when useful. **Never copy private content into this public repository** to achieve symmetry.
 4. The public and private repositories do not need identical contents.
 
+## Avoid unnecessary duplication
+
+- **Do not automatically port or mirror files already preserved in the ChatGPT Library or in a project's own GitHub repository.** Those already have a persistent home.
+- Use these storage repositories for new projects without another appropriate repository, standalone working materials, notes, or files that otherwise need durable organization.
+- Prefer referencing an existing Library file or project repository rather than copying its contents.
+- Copy something already stored elsewhere only when the user explicitly requests it or when there is a clear, task-specific benefit (such as a requested backup, a migration, or a needed version snapshot).
+- **Duplication and privacy are separate concerns.** A file can be completely non-sensitive and still be unnecessary to copy. Public storage's privacy restrictions always apply regardless.
+
 ## Existing folders
 
 | Folder | Description |
