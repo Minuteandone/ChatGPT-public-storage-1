@@ -10,7 +10,28 @@
 :root{color-scheme:dark;--bg:#141b26;--panel:#1d2734;--panel-alt:#202c3a;--ink:#f5f2e7;--muted:#a0adbb;--line:#394555;--accent:#ff826f;--accent-light:#ffac92;--teal:#8ddcc6;--cream:#e7dfbd;--pixel:#273545;--shadow:0 16px 50px #050a1270}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{background:var(--bg);color:var(--ink);margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;line-height:1.48;min-height:100vh}body:before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(#ffffff04 1px,transparent 1px),linear-gradient(90deg,#ffffff04 1px,transparent 1px);background-size:36px 36px;opacity:.5}.page-glow{position:absolute;z-index:-1;top:20px;right:8%;width:450px;height:450px;background:#ff826f10;filter:blur(90px);pointer-events:none}.app-shell{max-width:1240px;margin:auto;padding:0 36px 25px}a{color:var(--teal)}button,select,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.48}.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:24px 0;gap:16px}.brand{display:flex;align-items:center;gap:12px}.brand-ball{height:34px;width:34px;border:3px solid var(--ink);border-radius:50%;position:relative;transform:rotate(-15deg);background:linear-gradient(to bottom,var(--accent) 45%,var(--ink) 45%,var(--ink) 55%,var(--panel) 55%)}.brand-ball span{position:absolute;border:3px solid var(--ink);background:var(--bg);width:13px;height:13px;left:8px;top:8px;border-radius:50%}.brand-name{font-size:20px;font-weight:900;letter-spacing:-1px;white-space:nowrap}.brand-name .slash{color:var(--accent)}.brand-name small{font-size:10px;font-weight:normal;letter-spacing:1px;vertical-align:super;color:var(--muted);margin-left:5px}.header-caption,.header-version{font-size:10px;letter-spacing:1.8px;color:var(--muted)}.header-caption{display:flex;align-items:center;gap:9px}.header-version{color:#6f8497}.status-dot,.result-live span{width:7px;height:7px;background:var(--teal);border-radius:50%;display:inline-block;box-shadow:0 0 13px #8ddcc677}.intro{display:flex;justify-content:space-between;align-items:center;padding:52px 0 44px;gap:18px}.eyebrow{margin:0;color:var(--teal);font-size:11px;font-weight:bold;letter-spacing:2px}.intro h1{font-size:clamp(38px,5.4vw,68px);line-height:1.12;letter-spacing:-3.7px;margin:13px 0 15px;font-weight:850}.intro h1 em{color:var(--accent);font-style:normal}.subtitle{color:var(--muted);font-family:system-ui,sans-serif;font-size:15px;max-width:520px;line-height:1.7;margin:0}.intro-stamp{flex-shrink:0;width:184px;height:184px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #ff826f88;outline:1px solid #394555;outline-offset:8px;transform:rotate(11deg);background:radial-gradient(circle,#ff826f14,transparent)}.intro-stamp span{color:var(--accent);font-size:12px}.intro-stamp strong{font-size:35px;letter-spacing:-2px}.intro-stamp small{letter-spacing:3px;color:var(--muted);font-size:10px}.workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.02fr);gap:20px;align-items:start}.controls-panel,.result-panel,.recent-section{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:23px}.panel-head{display:flex;align-items:center;gap:10px;margin-bottom:24px}.panel-head h2{margin:0;font-size:13px;letter-spacing:1.9px;white-space:nowrap}.panel-num{color:var(--accent);border:1px solid #ff826f77;padding:3px 5px;font-size:10px}.panel-extra{font-size:10px;letter-spacing:1px;color:#7f91a4;margin-left:auto}.specimen-cards{display:flex;flex-direction:column;gap:0}.specimen-card{border:1px solid var(--line);background:#1a2430;border-radius:7px;padding:15px 16px}.specimen-top,.screen-top,.screen-bottom{display:flex;justify-content:space-between;align-items:center}.tiny-label,.specimen-id{font-size:10px;letter-spacing:1.3px;color:var(--teal)}.specimen-id{color:#9faabb}.specimen-main{display:flex;gap:18px;align-items:center;margin-top:12px}.sprite-frame{background:var(--cream);width:92px;height:92px;border:4px solid #465361;display:flex;justify-content:center;align-items:center;flex-shrink:0;image-rendering:pixelated}.sprite-frame img{max-width:77px;max-height:77px;width:80%;height:80%;object-fit:contain;image-rendering:pixelated}.specimen-select{min-width:0;flex:1}.specimen-select label,.control-group label,.range-heading label{display:block;font-size:10px;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px}.specimen-select select,.large-select{width:100%;background:#273442;border:1px solid #4b5a6a;border-radius:5px;color:var(--ink);padding:11px 32px 11px 11px;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23bdd6d0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-position:right 10px center;background-repeat:no-repeat}.specimen-select select:focus,.large-select:focus{border-color:var(--teal);box-shadow:0 0 0 3px #8ddcc623}.select-hint{font-size:10px;color:#8c9cad;display:block;margin-top:6px}.fusion-link{display:flex;align-items:center;gap:15px;margin:7px 27px;color:var(--accent);font-size:18px;font-weight:bold}.link-line{height:12px;width:1px;background:var(--line)}.action-row{display:flex;gap:11px;margin-top:18px}.button{border-radius:5px;border:1px solid transparent;padding:13px 16px;font-size:11px;font-weight:800;letter-spacing:1px;white-space:nowrap;transition:background .15s,transform .15s,border .15s}.button:active:not(:disabled){transform:translateY(2px)}.button-primary{background:var(--accent);color:#281e27;box-shadow:0 4px 0 #b65451}.button-primary:hover:not(:disabled){background:#ffab92}.button-outline{border-color:#67778b;color:var(--ink);background:#ffffff05}.button-outline:hover:not(:disabled){background:#354458;border-color:var(--teal)}.action-row .button:first-child{width:35%}.action-row .button:last-child{flex:1}.tuning-head{padding-top:33px;border-top:1px solid var(--line);margin-top:33px}.control-group{margin-bottom:19px}.hint-chip{font-size:9px;background:#37483f;color:var(--teal);padding:3px 5px;margin-left:5px;border-radius:2px;letter-spacing:.4px}.slider-group{margin:23px 0}.range-heading{display:flex;justify-content:space-between;align-items:center}.range-heading output{color:var(--teal);font-size:12px}.slider-group input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;height:7px;margin:9px 0}.range-notes{display:flex;justify-content:space-between;font-size:9px;color:#8192a4;letter-spacing:.8px}.toggle-group{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:18px;margin-top:8px}.toggle-label{font-size:10px;letter-spacing:1px}.toggle-label small{display:block;font-size:10px;color:var(--muted);letter-spacing:0;margin-top:5px}.toggle-group input{height:22px;width:22px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}.reset-link{border:0;background:none;color:var(--muted);text-decoration:underline;font-size:11px;text-underline-offset:4px;margin-top:19px;padding:0}.reset-link:hover{color:var(--teal)}.result-live{display:flex;gap:9px;align-items:center;font-size:10px;color:var(--teal);letter-spacing:.8px;margin-left:auto}.result-screen{background:var(--cream);padding:17px;color:#304051;box-shadow:inset 0 0 0 5px #c4c19f,0 12px 0 #101923;border:5px solid #657364;border-radius:8px}.screen-top,.screen-bottom{font-size:9px;font-weight:850;letter-spacing:1.3px}.canvas-wrap{height:min(35vw,330px);min-height:252px;max-height:350px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}.canvas-halo{border-radius:50%;position:absolute;width:75%;aspect-ratio:1;background:#b7c2a790;filter:blur(48px);pointer-events:none}#fusion-canvas{width:min(100%,320px);height:auto;image-rendering:pixelated;position:relative;z-index:1;filter:drop-shadow(8px 9px 0 #8b917c40)}.canvas-loader{position:absolute;z-index:3;background:#e7dfbdd9;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#304051;font-size:11px;letter-spacing:1px}.canvas-loader[hidden]{display:none}.loading-orb{width:24px;height:24px;border:4px solid #30405166;border-top-color:#ef7562;border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.result-description{text-align:center;padding:30px 7px 19px}.result-description .eyebrow{font-size:10px}.result-description h2{font-size:clamp(25px,3vw,37px);line-height:1.25;margin:9px 0 6px;letter-spacing:-1.5px;overflow-wrap:anywhere}.result-description p:last-child{margin:0;color:var(--muted);font-family:system-ui,sans-serif;font-size:13px}.result-actions{display:flex;gap:10px}.result-actions button:first-child{flex:1}.status-text{margin:17px 0 0;text-align:center;font-size:10px;color:var(--teal);min-height:15px}.error-message{padding:11px;border:1px solid #fa827a;color:#ffc4ba;background:#ff6d6d12;font-size:12px;line-height:1.6}.result-notes{margin-top:22px;border-top:1px solid var(--line);padding-top:16px;display:flex;gap:10px;align-items:flex-start}.result-notes .star{color:var(--accent);font-size:21px}.result-notes p{font-size:11px;color:var(--muted);line-height:1.65;margin:0}.recent-section{margin-top:20px}.recent-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.recent-item{min-width:0;text-align:center;border:1px solid var(--line);background:#19232f;border-radius:7px;padding:8px;color:var(--ink);transition:border .15s,transform .15s}.recent-item:hover{border-color:var(--teal);transform:translateY(-3px)}.recent-thumb{width:100%;aspect-ratio:1;background:var(--cream);display:flex;align-items:center;justify-content:center;border-radius:3px;margin-bottom:7px;overflow:hidden}.recent-thumb img{display:block;image-rendering:pixelated;width:100%;height:100%;object-fit:contain}.recent-item span{font-size:10px;display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.recent-empty{grid-column:1/-1;color:var(--muted);font-size:12px;padding:28px;text-align:center;border:1px dashed var(--line)}.history-clear{margin-top:16px}.footer{display:flex;justify-content:space-between;gap:16px;padding:30px 0;color:#8b9cae;font-size:9px;letter-spacing:.5px;line-height:1.8}.footer a{color:var(--teal);text-decoration:none}@media (max-width:1040px){.app-shell{padding:0 20px 24px}.workspace{gap:14px}.controls-panel,.result-panel,.recent-section{padding:18px}.result-actions{flex-direction:column}.result-actions button{width:100%}.recent-grid{grid-template-columns:repeat(4,1fr)}}@media (max-width:780px){.topbar{padding:20px 0}.header-caption{display:none}.intro{padding:36px 0;align-items:flex-start}.intro h1{letter-spacing:-2px}.intro-stamp{width:123px;height:123px;margin-right:12px}.intro-stamp strong{font-size:24px}.workspace{grid-template-columns:1fr}.result-screen{max-width:570px;margin:auto}.canvas-wrap{height:330px}.recent-grid{grid-template-columns:repeat(4,1fr)}}@media (max-width:480px){.app-shell{padding:0 12px 18px}.brand-name{font-size:18px}.intro h1{font-size:38px}.intro-stamp{display:none}.intro{padding:33px 0}.controls-panel,.result-panel,.recent-section{padding:14px}.panel-head h2{font-size:11px;letter-spacing:.9px}.panel-extra{font-size:9px}.specimen-main{gap:10px}.sprite-frame{width:75px;height:75px}.specimen-select select{font-size:11px}.action-row .button{font-size:10px;padding:13px 10px}.canvas-wrap{height:270px;min-height:230px}.recent-grid{grid-template-columns:repeat(3,1fr);gap:8px}.footer{flex-direction:column}.result-live{font-size:8px}}@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 
+/* v2: discovery/search, exploratory mutations and saved specimens */
+.species-search{display:block;width:100%;border:1px solid #4b5a6a;background:#141f2c;color:var(--ink);border-radius:5px;margin:0 0 7px;padding:8px 9px;font:inherit;font-size:11px;min-width:0}
+.species-search:focus{outline:2px solid var(--teal);outline-offset:1px}
+.control-description{margin:7px 0 0;color:var(--muted);font-size:10px;line-height:1.6}
+.variants-section{border-top:1px solid var(--line);margin-top:24px;padding-top:20px}
+.variant-header{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:13px}
+.variant-header h3{font-size:11px;letter-spacing:1.4px;margin:0;color:var(--teal)}
+.variant-header span{color:var(--muted);font-size:9px;letter-spacing:.5px;text-align:right}
+.variant-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.variant-item{display:flex;min-width:0;flex-direction:column;align-items:center;gap:5px;border:1px solid var(--line);border-radius:6px;padding:7px 3px;background:#18212d;color:var(--ink);cursor:pointer}
+.variant-item:hover,.variant-item:focus-visible{border-color:var(--teal);background:#293947}
+.variant-item[aria-current=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.variant-item canvas{display:block;width:100%;max-width:88px;image-rendering:pixelated;aspect-ratio:1;background:#e7dfbd;border-radius:3px}
+.variant-item strong{font-size:9px;font-weight:650;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.result-actions{flex-wrap:wrap}.result-actions #favorite-btn{min-width:95px}
+.result-actions #favorite-btn[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+.favorites-section{margin-top:18px}
+@media(max-width:480px){.variant-header span{max-width:130px}.variant-grid{gap:5px}.variant-item strong{font-size:8px}.specimen-main{align-items:flex-start}.result-actions #favorite-btn{width:100%}}
+
 </style>
+  
+  
 </head>
 <body>
   <div class="page-glow" aria-hidden="true"></div>
@@ -20,15 +41,15 @@
         <div class="brand-ball" aria-hidden="true"><span></span></div>
         <div class="brand-name">POKÉ<span class="slash">//</span>SPLICE <small>LAB 001</small></div>
       </div>
-      <div class="header-caption"><span class="status-dot"></span> GEN I SPRITE EXPERIMENT <span class="header-version">/ v1.0</span></div>
+      <div class="header-caption"><span class="status-dot"></span> GEN I SPRITE EXPERIMENT <span class="header-version">/ v2.0</span></div>
     </header>
 
     <main>
       <div class="intro">
         <div>
-          <p class="eyebrow">THE ORIGINAL 151 · ∞ COMBINATIONS</p>
+          <p class="eyebrow">THE ORIGINAL 151 · 22,801 PAIRINGS · PROCEDURAL FUSIONS</p>
           <h1>Make something<br><em>that shouldn't exist.</em></h1>
-          <p class="subtitle">Two classic sprites. One questionable scientific achievement. Automatic pixel-art fusion, entirely in your browser.</p>
+          <p class="subtitle">Two classic sprites. One questionable scientific achievement. Improved silhouette-aware fusion, multiple mutations per pair, and an entirely browser-based lab.</p>
         </div>
         <div class="intro-stamp" aria-hidden="true"><span>151 × 151</span><strong>22,801</strong><small>PAIRINGS</small></div>
       </div>
@@ -39,14 +60,15 @@
           <div class="specimen-cards">
             <div class="specimen-card">
               <div class="specimen-top"><span class="tiny-label">A / HEAD DONOR</span><span class="specimen-id" id="head-id">#025</span></div>
-              <div class="specimen-main"><div class="sprite-frame"><img id="head-preview" alt="Head donor sprite"></div><div class="specimen-select"><label for="head-select">HEAD FROM</label><select id="head-select"></select><span class="select-hint">Face and upper features</span></div></div>
+              <div class="specimen-main"><div class="sprite-frame"><img id="head-preview" alt="Head donor sprite"></div><div class="specimen-select"><label for="head-select">HEAD FROM</label><input class="species-search" id="head-search" type="search" list="pokemon-list" placeholder="🔎 Find by name or number…" autocomplete="off"><select id="head-select"></select><span class="select-hint">Face and upper features</span></div></div>
             </div>
             <div class="fusion-link" aria-hidden="true"><div class="link-line"></div><span>+</span><div class="link-line"></div></div>
             <div class="specimen-card">
               <div class="specimen-top"><span class="tiny-label">B / BODY DONOR</span><span class="specimen-id" id="body-id">#001</span></div>
-              <div class="specimen-main"><div class="sprite-frame"><img id="body-preview" alt="Body donor sprite"></div><div class="specimen-select"><label for="body-select">BODY FROM</label><select id="body-select"></select><span class="select-hint">Torso and lower features</span></div></div>
+              <div class="specimen-main"><div class="sprite-frame"><img id="body-preview" alt="Body donor sprite"></div><div class="specimen-select"><label for="body-select">BODY FROM</label><input class="species-search" id="body-search" type="search" list="pokemon-list" placeholder="🔎 Find by name or number…" autocomplete="off"><select id="body-select"></select><span class="select-hint">Torso and lower features</span></div></div>
             </div>
           </div>
+          <datalist id="pokemon-list"></datalist>
           <div class="action-row">
             <button class="button button-outline" id="swap-btn" type="button"><span aria-hidden="true">⇄</span> SWAP</button>
             <button class="button button-primary" id="random-btn" type="button"><span aria-hidden="true">✦</span> RANDOM FUSION</button>
@@ -60,6 +82,15 @@
               <option value="yellow">Yellow · 1998</option>
               <option value="red-green-japan">Red / Green · Japan 1996</option>
             </select>
+          </div>
+          <div class="control-group">
+            <label for="mode">FUSION METHOD <span class="hint-chip">NEW</span></label>
+            <select id="mode" class="large-select">
+              <option value="contour">Contour splice · organic seam</option>
+              <option value="graft">Graft · keep extra body features</option>
+              <option value="classic">Classic · straight splice</option>
+            </select>
+            <p class="control-description" id="mode-description">Follows the sprite silhouette for a less abrupt connection.</p>
           </div>
           <div class="control-group">
             <label for="palette">COLOR TREATMENT</label>
@@ -81,6 +112,16 @@
             <input type="range" id="splice" min="30" max="64" step="2" value="46">
             <div class="range-notes"><span>MORE HEAD</span><span>MORE BODY</span></div>
           </div>
+          <div class="slider-group">
+            <div class="range-heading"><label for="shift-x">HEAD POSITION</label><output id="shift-x-value" for="shift-x">CENTERED</output></div>
+            <input type="range" id="shift-x" min="-18" max="18" step="1" value="0">
+            <div class="range-notes"><span>LEFT</span><span>RIGHT</span></div>
+          </div>
+          <div class="slider-group">
+            <div class="range-heading"><label for="overlap">NECK OVERLAP</label><output id="overlap-value" for="overlap">3 PX</output></div>
+            <input type="range" id="overlap" min="0" max="12" step="1" value="3">
+            <div class="range-notes"><span>LESS OVERLAP</span><span>MORE OVERLAP</span></div>
+          </div>
           <div class="toggle-group"><label class="toggle-label" for="auto-seam">SMART SEAM DETECTION <small>Automatically find a narrower place to join</small></label><input type="checkbox" id="auto-seam" checked></div>
           <button class="reset-link" id="reset-btn" type="button">↺ Reset adjustments</button>
         </section>
@@ -94,16 +135,21 @@
           </div>
           <div class="result-description">
             <p class="eyebrow">NEWLY DISCOVERED SPECIES (?)</p>
-            <h2 id="fusion-name">Pikasaur</h2>
+            <h2 id="fusion-name">Pikasa ur</h2>
             <p id="fusion-details">Pikachu head · Bulbasaur body</p>
           </div>
           <p class="error-message" id="error-msg" role="alert" hidden></p>
           <div class="result-actions">
             <button class="button button-primary" id="download-btn" type="button" disabled>↓ DOWNLOAD PNG</button>
+            <button class="button button-outline" id="favorite-btn" type="button" aria-pressed="false" disabled>☆ SAVE</button>
             <button class="button button-outline" id="share-btn" type="button">↗ COPY LINK</button>
           </div>
           <p id="status-text" class="status-text" role="status" aria-live="polite">Loading your first fusion…</p>
-          <div class="result-notes"><span class="star">✳</span><p>Each fusion is cut and assembled from real Gen I pixel sprites—no pre-made combinations, no AI image generator, no server-side processing. Strange anatomy is a feature, probably.</p></div>
+          <div class="variants-section">
+            <div class="variant-header"><h3>✦ MUTATION EXPLORER</h3><span>FOUR WAYS TO SPLICE THE SAME PAIR</span></div>
+            <div id="variant-grid" class="variant-grid" aria-label="Generated fusion variants"></div>
+          </div>
+          <div class="result-notes"><span class="star">✳</span><p>Every fusion is assembled from real Gen I sprite pixels. Contour mode follows the neck silhouette; graft mode retains some side features. No AI image generation or server processing.</p></div>
         </section>
       </div>
 
@@ -111,6 +157,10 @@
         <div class="panel-head"><span class="panel-num">04</span><h2>RECENT MUTATIONS</h2><span class="panel-extra">SAVED LOCALLY</span></div>
         <div id="recent-grid" class="recent-grid"><div class="recent-empty">Your experiments will appear here.</div></div>
         <button type="button" class="reset-link history-clear" id="clear-history">Clear history</button>
+      </section>
+      <section class="recent-section favorites-section" aria-label="Favorite fusions">
+        <div class="panel-head"><span class="panel-num">05</span><h2>YOUR FAVORITES</h2><span class="panel-extra">STORED IN THIS BROWSER</span></div>
+        <div id="favorites-grid" class="recent-grid"><div class="recent-empty">Tap ☆ SAVE on a fusion you want to keep.</div></div>
       </section>
     </main>
     <footer class="footer"><span>A FAN-MADE PIXEL EXPERIMENT. NOT AFFILIATED WITH NINTENDO, GAME FREAK, OR THE POKÉMON COMPANY.</span><span>SPRITE SOURCE: <a href="https://github.com/PokeAPI/sprites" target="_blank" rel="noopener noreferrer">POKÉAPI / SPRITES ↗</a></span></footer>
@@ -242,61 +292,105 @@
     }
     context.putImageData(image, 0, 0);
   }
+  // Pixel-space masks produce a naturally uneven neck edge while retaining
+  // the original silhouette. No blur, resampling, or generative model is used.
+  function maskedSection(sprite, cut, part, mode, sideKeep = null) {
+    if (mode === 'classic') return sprite.canvas;
+    const copy = makeCanvas(sprite.width, sprite.height);
+    const ctx = copy.getContext('2d', {willReadFrequently:true});
+    ctx.drawImage(sprite.canvas, 0, 0);
+    const image = ctx.getImageData(0, 0, sprite.width, sprite.height);
+    for (let y = 0; y < sprite.height; y++) {
+      const center = sprite.rowCenters[y] || sprite.width / 2;
+      for (let x = 0; x < sprite.width; x++) {
+        const distance = clamp(Math.abs(x + .5 - center) / Math.max(5, sprite.width * .5), 0, 1);
+        // The middle of the cut is slightly lower than the edges, like a neck.
+        const offset = Math.round(3 - 5 * distance * distance);
+        const boundary = cut + offset;
+        let keep = part === 'head' ? y < boundary : y >= boundary;
+        if (!keep && part === 'body' && sideKeep && y >= cut - Math.round(sprite.height * .28)) {
+          const screenX = sideKeep.bodyX + (x + .5) * sideKeep.bodyScale;
+          keep = screenX < sideKeep.headX - 2 || screenX > sideKeep.headX + sideKeep.headW + 2;
+        }
+        if (!keep) image.data[(y * sprite.width + x) * 4 + 3] = 0;
+      }
+    }
+    ctx.putImageData(image, 0, 0);
+    return copy;
+  }
+  function neckInk(sprite, cut) {
+    const data = sprite.canvas.getContext('2d', {willReadFrequently:true}).getImageData(0, 0, sprite.width, sprite.height).data;
+    const x0 = Math.max(0, Math.floor(sprite.rowCenters[Math.max(0, cut - 1)] - 3));
+    const x1 = Math.min(sprite.width - 1, x0 + 6);
+    for (let y = Math.min(sprite.height - 1, cut); y >= Math.max(0, cut - 7); y--) {
+      for (let x = x0; x <= x1; x++) {
+        const i = (y * sprite.width + x) * 4;
+        if (data[i + 3] > 220) return `rgb(${data[i]},${data[i + 1]},${data[i + 2]})`;
+      }
+    }
+    return '#5a5a5a';
+  }
   function fuse(headImage, bodyImage, output, options = {}) {
     if (!output || typeof output.getContext !== 'function') throw new Error('Missing result canvas.');
     const head = extract(headImage), body = extract(bodyImage);
     const fraction = clamp(Number(options.splice ?? 46) / 100, .3, .64);
     const requestedHeadSize = clamp(Number(options.headSize ?? 100) / 100, .65, 1.5);
     const smart = options.smart !== false;
+    const mode = ['classic', 'contour', 'graft'].includes(options.mode) ? options.mode : 'contour';
     const headCut = seamAt(head, fraction + .04, smart);
     const bodyCut = seamAt(body, fraction - .07, smart);
-    const context = output.getContext('2d', { willReadFrequently: true });
+    const context = output.getContext('2d', {willReadFrequently:true});
     output.width = SIZE; output.height = SIZE;
-    context.clearRect(0, 0, SIZE, SIZE);
     context.imageSmoothingEnabled = false;
+    context.clearRect(0, 0, SIZE, SIZE);
 
     const bodyScale = Math.min(1.48, 67 / body.width, 69 / body.height);
     const bodyX = Math.round((SIZE - body.width * bodyScale) / 2);
     const bodyY = Math.round(84 - body.height * bodyScale);
     const bodyJointY = Math.round(bodyY + bodyCut * bodyScale);
     const bodyJointX = bodyX + jointCenter(body, bodyCut, bodyCut + 4) * bodyScale;
-    const bodyLowerHeight = body.height - bodyCut;
-    if (bodyLowerHeight > 0) context.drawImage(body.canvas,
-      0, bodyCut, body.width, bodyLowerHeight,
-      bodyX, bodyJointY, Math.round(body.width * bodyScale), Math.round(bodyLowerHeight * bodyScale));
 
-    // Scale the upper region relative to the body, then align the head's lower
-    // silhouette centroid to the body's upper silhouette centroid.
     const fitWidth = Math.min(1.55, 47 / head.width, (body.width * bodyScale * 1.02) / head.width);
     const fitHeight = Math.min(1.6, 43 / Math.max(headCut, 1));
     const headScale = Math.min(fitWidth, fitHeight) * requestedHeadSize;
     const headW = Math.max(1, Math.round(head.width * headScale));
-    const headH = Math.max(1, Math.round(headCut * headScale));
+    const headH = Math.max(1, Math.round(head.height * headScale));
     const headJoint = jointCenter(head, headCut - 5, headCut - 1);
-    let headX = Math.round(bodyJointX - headJoint * headScale);
-    let headY = Math.round(bodyJointY - headH + Math.max(2, Math.round(3 * bodyScale)));
+    const overlap = clamp(Number(options.overlap ?? 3), 0, 12);
+    const shiftX = clamp(Number(options.shiftX ?? 0), -18, 18);
+    const shiftY = clamp(Number(options.shiftY ?? 0), -12, 12);
+    let headX = Math.round(bodyJointX - headJoint * headScale + shiftX);
+    let headY = Math.round(bodyJointY - headCut * headScale + overlap + shiftY);
     headX = clamp(headX, 2, Math.max(2, SIZE - 2 - headW));
-    headY = clamp(headY, 2, Math.max(2, SIZE - 5 - headH));
+    headY = clamp(headY, 2, Math.max(2, SIZE - 4 - headH * .38));
 
-    // Very short pixel connector behind head for disconnected anatomy.
-    // Most sprites already overlap, but this helps narrow/thin necks.
-    const jointGap = bodyJointY - (headY + headH);
+    if (mode === 'classic') {
+      const bodyLowerHeight = body.height - bodyCut;
+      if (bodyLowerHeight > 0) context.drawImage(body.canvas, 0, bodyCut, body.width, bodyLowerHeight,
+        bodyX, bodyJointY, Math.round(body.width * bodyScale), Math.round(bodyLowerHeight * bodyScale));
+    } else {
+      context.drawImage(maskedSection(body, bodyCut, 'body', mode,
+        mode === 'graft' ? {bodyX, bodyScale, headX, headW} : null),
+        bodyX, bodyY, Math.round(body.width * bodyScale), Math.round(body.height * bodyScale));
+    }
+    const jointGap = bodyJointY - (headY + headCut * headScale);
     if (jointGap > 0 && jointGap < 9) {
       const center = Math.round((bodyJointX + headX + headJoint * headScale) / 2);
-      context.fillStyle = '#353d42';
-      context.fillRect(center - 3, headY + headH - 1, 6, jointGap + 3);
-      context.fillStyle = '#9fa397';
-      context.fillRect(center - 2, headY + headH, 4, jointGap + 2);
+      context.fillStyle = neckInk(body, bodyCut);
+      context.fillRect(center - 3, Math.round(headY + headCut * headScale) - 1, 6, Math.ceil(jointGap) + 3);
     }
-    context.drawImage(head.canvas, 0, 0, head.width, headCut, headX, headY, headW, headH);
+    if (mode === 'classic') {
+      context.drawImage(head.canvas, 0, 0, head.width, headCut,
+        headX, headY, headW, Math.max(1, Math.round(headCut * headScale)));
+    } else {
+      context.drawImage(maskedSection(head, headCut, 'head', mode), headX, headY, headW, headH);
+    }
     recolor(output, options.palette || 'original');
-    return { headCut, bodyCut, pixels: SIZE, headScale, bodyScale };
+    return {headCut, bodyCut, pixels:SIZE, headScale, bodyScale, mode};
   }
-  global.FusionEngine = Object.freeze({ fuse, extract, seamAt, PALETTES, SIZE });
+  global.FusionEngine = Object.freeze({fuse, extract, seamAt, PALETTES, SIZE});
 })(window);
 
-</script>
-<script>
 (() => {
   'use strict';
   const NAMES = `Bulbasaur|Ivysaur|Venusaur|Charmander|Charmeleon|Charizard|Squirtle|Wartortle|Blastoise|Caterpie|Metapod|Butterfree|Weedle|Kakuna|Beedrill|Pidgey|Pidgeotto|Pidgeot|Rattata|Raticate|Spearow|Fearow|Ekans|Arbok|Pikachu|Raichu|Sandshrew|Sandslash|Nidoran♀|Nidorina|Nidoqueen|Nidoran♂|Nidorino|Nidoking|Clefairy|Clefable|Vulpix|Ninetales|Jigglypuff|Wigglytuff|Zubat|Golbat|Oddish|Gloom|Vileplume|Paras|Parasect|Venonat|Venomoth|Diglett|Dugtrio|Meowth|Persian|Psyduck|Golduck|Mankey|Primeape|Growlithe|Arcanine|Poliwag|Poliwhirl|Poliwrath|Abra|Kadabra|Alakazam|Machop|Machoke|Machamp|Bellsprout|Weepinbell|Victreebel|Tentacool|Tentacruel|Geodude|Graveler|Golem|Ponyta|Rapidash|Slowpoke|Slowbro|Magnemite|Magneton|Farfetch'd|Doduo|Dodrio|Seel|Dewgong|Grimer|Muk|Shellder|Cloyster|Gastly|Haunter|Gengar|Onix|Drowzee|Hypno|Krabby|Kingler|Voltorb|Electrode|Exeggcute|Exeggutor|Cubone|Marowak|Hitmonlee|Hitmonchan|Lickitung|Koffing|Weezing|Rhyhorn|Rhydon|Chansey|Tangela|Kangaskhan|Horsea|Seadra|Goldeen|Seaking|Staryu|Starmie|Mr. Mime|Scyther|Jynx|Electabuzz|Magmar|Pinsir|Tauros|Magikarp|Gyarados|Lapras|Ditto|Eevee|Vaporeon|Jolteon|Flareon|Porygon|Omanyte|Omastar|Kabuto|Kabutops|Aerodactyl|Snorlax|Articuno|Zapdos|Moltres|Dratini|Dragonair|Dragonite|Mewtwo|Mew`.split('|');
@@ -304,16 +398,18 @@
   const $ = id => document.getElementById(id);
   const refs = {
     head: $('head-select'), body: $('body-select'), edition: $('edition'), palette: $('palette'),
-    size: $('head-size'), splice: $('splice'), smart: $('auto-seam'), canvas: $('fusion-canvas'),
+    size: $('head-size'), splice: $('splice'), shiftX: $('shift-x'), overlap: $('overlap'), mode: $('mode'), smart: $('auto-seam'), canvas: $('fusion-canvas'),
     headPreview: $('head-preview'), bodyPreview: $('body-preview'), loader: $('loader'),
     error: $('error-msg'), status: $('status-text'), name: $('fusion-name'), details: $('fusion-details'),
-    recent: $('recent-grid'), download: $('download-btn')
+    recent: $('recent-grid'), variants: $('variant-grid'), favoritesGrid: $('favorites-grid'), favorite: $('favorite-btn'), download: $('download-btn')
   };
   const STORAGE_KEY = 'pokesplice.gen1.history.v1';
+  const FAVORITES_KEY = 'pokesplice.gen1.favorites.v2';
   const cache = new Map();
   let currentRender = 0;
   let timer = 0;
   let history = [];
+  let favorites = [];
   let isReady = false;
   const numeric = (v, fallback, lo, hi) => Number.isFinite(Number(v)) ? Math.max(lo, Math.min(hi, Number(v))) : fallback;
   const pad = n => String(n).padStart(3, '0');
@@ -344,7 +440,8 @@
     return {
       head: Number(refs.head.value), body: Number(refs.body.value),
       edition: refs.edition.value, palette: refs.palette.value,
-      headSize: Number(refs.size.value), splice: Number(refs.splice.value), smart: refs.smart.checked
+      headSize: Number(refs.size.value), splice: Number(refs.splice.value), shiftX: Number(refs.shiftX.value),
+      overlap: Number(refs.overlap.value), mode: refs.mode.value, smart: refs.smart.checked
     };
   }
   function nameFor(a, b) {
@@ -365,6 +462,13 @@
     refs.details.textContent = `${NAMES[v.head - 1]} head · ${NAMES[v.body - 1]} body`;
     $('head-size-value').textContent = `${v.headSize}%`;
     $('splice-value').textContent = `${v.splice}%`;
+    $('shift-x-value').textContent = v.shiftX === 0 ? 'CENTERED' : `${v.shiftX > 0 ? '+' : ''}${v.shiftX} PX`;
+    $('overlap-value').textContent = `${v.overlap} PX`;
+    $('mode-description').textContent = {
+      contour: 'Curved, pixel-precise cuts follow each silhouette for a smoother neck.',
+      graft: 'Contour splice plus visible side features from the body donor.',
+      classic: 'The original simple horizontal splice, preserved for comparison.'
+    }[v.mode];
     for (const [preview, id] of [[refs.headPreview, v.head], [refs.bodyPreview, v.body]]) {
       preview.dataset.fallback = '0';
       preview.onerror = () => {
@@ -383,7 +487,7 @@
     refs.status.style.color = error ? '#ff9d91' : '';
   }
   function saveHistory(v) {
-    const key = JSON.stringify(v);
+    const key = `${v.head}:${v.body}:${v.edition}:${v.mode}`;
     const png = refs.canvas.toDataURL('image/png');
     history = [{ ...v, key, png }, ...history.filter(item => item.key !== key)].slice(0, 12);
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); }
@@ -391,15 +495,18 @@
     renderHistory();
   }
   function renderHistory() {
-    refs.recent.replaceChildren();
-    if (!history.length) {
+    renderCollection(refs.recent, history, 'Your experiments will appear here.');
+  }
+  function renderCollection(container, items, emptyText) {
+    container.replaceChildren();
+    if (!items.length) {
       const div = document.createElement('div');
       div.className = 'recent-empty';
-      div.textContent = 'Your experiments will appear here.';
-      refs.recent.appendChild(div);
+      div.textContent = emptyText;
+      container.appendChild(div);
       return;
     }
-    for (const item of history) {
+    for (const item of items) {
       if (!(item.head >= 1 && item.head <= 151 && item.body >= 1 && item.body <= 151) || typeof item.png !== 'string') continue;
       const button = document.createElement('button');
       button.type = 'button';
@@ -415,7 +522,60 @@
       title.textContent = nameFor(item.head, item.body);
       button.append(frame, title);
       button.addEventListener('click', () => { applyValues(item); scheduleRender(); window.scrollTo({top:0,behavior:'smooth'}); });
-      refs.recent.appendChild(button);
+      container.appendChild(button);
+    }
+  }
+  function favoriteKey(v) {
+    return JSON.stringify([v.head,v.body,v.edition,v.palette,v.headSize,v.splice,v.shiftX,v.overlap,v.mode,v.smart]);
+  }
+  function updateFavoriteButton(v) {
+    const saved = favorites.some(item => item.key === favoriteKey(v));
+    refs.favorite.textContent = saved ? '★ SAVED' : '☆ SAVE';
+    refs.favorite.setAttribute('aria-pressed', saved ? 'true' : 'false');
+  }
+  function renderFavorites() {
+    renderCollection(refs.favoritesGrid, favorites, 'Tap ☆ SAVE on a fusion you want to keep.');
+  }
+  function toggleFavorite() {
+    if (!isReady) return;
+    const v = values(), key = favoriteKey(v);
+    const existing = favorites.findIndex(item => item.key === key);
+    if (existing >= 0) {
+      favorites.splice(existing, 1);
+      setStatus('☆ Removed from favorites');
+    } else {
+      favorites.unshift({...v, key, png:refs.canvas.toDataURL('image/png')});
+      favorites = favorites.slice(0, 24);
+      setStatus('★ Saved to your local favorites');
+    }
+    try {localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));} catch (_) {
+      setStatus('Favorites available for this session; browser storage unavailable.', true);
+    }
+    updateFavoriteButton(v);
+    renderFavorites();
+  }
+  function renderVariants(head, body, current) {
+    refs.variants.replaceChildren();
+    const recipes = [
+      ['Classic', {mode:'classic', headSize:100, splice:46, shiftX:0, overlap:3}],
+      ['Contour', {mode:'contour', headSize:100, splice:46, shiftX:0, overlap:3}],
+      ['Big head', {mode:'contour', headSize:125, splice:40, shiftX:0, overlap:4}],
+      ['Graft', {mode:'graft', headSize:92, splice:53, shiftX:0, overlap:5}]
+    ];
+    for (const [title, patch] of recipes) {
+      const v = {...current,...patch};
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'variant-item';
+      button.title = `Try ${title.toLowerCase()} fusion`;
+      button.setAttribute('aria-label', `Use ${title} fusion`);
+      button.setAttribute('aria-current', Object.keys(patch).every(k => current[k] === patch[k]) ? 'true' : 'false');
+      const canvas = document.createElement('canvas');
+      canvas.width = 96; canvas.height = 96;
+      window.FusionEngine.fuse(head, body, canvas, v);
+      const label = document.createElement('strong'); label.textContent = title;
+      button.append(canvas, label);
+      button.addEventListener('click', () => {applyValues(v); scheduleRender();});
+      refs.variants.appendChild(button);
     }
   }
   function applyValues(v) {
@@ -425,6 +585,9 @@
     if (['original', 'gameboy', 'blue', 'red', 'sepia'].includes(v.palette)) refs.palette.value = v.palette;
     refs.size.value = String(numeric(v.headSize, 100, 65, 150));
     refs.splice.value = String(numeric(v.splice, 46, 30, 64));
+    refs.shiftX.value = String(numeric(v.shiftX, 0, -18, 18));
+    refs.overlap.value = String(numeric(v.overlap, 3, 0, 12));
+    refs.mode.value = ['classic', 'contour', 'graft'].includes(v.mode) ? v.mode : 'contour';
     refs.smart.checked = v.smart !== false && v.smart !== 'false' && v.smart !== '0';
   }
   function scheduleRender() {
@@ -432,7 +595,9 @@
     const v = values();
     updateChrome(v);
     const token = ++currentRender;
+    isReady = false;
     refs.download.disabled = true;
+    refs.favorite.disabled = true;
     refs.loader.hidden = false;
     refs.error.hidden = true;
     setStatus('Splicing specimens…');
@@ -446,16 +611,20 @@
       if (token !== currentRender) return;
       isReady = true;
       refs.download.disabled = false;
+      refs.favorite.disabled = false;
       refs.loader.hidden = true;
       setStatus('✓ Fusion complete · generated locally in your browser');
       refs.error.hidden = true;
       updateUrl(v);
       saveHistory(v);
+      renderVariants(head, body, v);
+      updateFavoriteButton(v);
     } catch (error) {
       if (token !== currentRender) return;
       isReady = false;
       refs.loader.hidden = true;
       refs.download.disabled = true;
+      refs.favorite.disabled = true;
       refs.error.hidden = false;
       refs.error.textContent = `Sprite loading failed: ${error.message}`;
       setStatus('Unable to complete fusion', true);
@@ -469,6 +638,9 @@
     if (v.palette !== 'original') params.set('palette', v.palette);
     if (v.headSize !== 100) params.set('size', String(v.headSize));
     if (v.splice !== 46) params.set('splice', String(v.splice));
+    if (v.mode !== 'contour') params.set('mode', v.mode);
+    if (v.shiftX !== 0) params.set('x', String(v.shiftX));
+    if (v.overlap !== 3) params.set('overlap', String(v.overlap));
     if (!v.smart) params.set('smart', '0');
     const url = `${location.pathname}?${params.toString()}${location.hash}`;
     try { historyApiReplace(url); } catch (_) { /* Embedded browsers can restrict URL changes. */ }
@@ -499,7 +671,12 @@
     scheduleRender();
   }
   function populateNames() {
+    const namesList = $('pokemon-list');
     for (let i = 0; i < NAMES.length; i++) {
+      const suggestion = document.createElement('option');
+      suggestion.value = NAMES[i];
+      suggestion.label = `#${pad(i + 1)}`;
+      namesList.appendChild(suggestion);
       for (const select of [refs.head, refs.body]) {
         const option = new Option(`#${pad(i + 1)} ${NAMES[i]}`, String(i + 1));
         select.appendChild(option);
@@ -512,6 +689,7 @@
       head:query.get('head') ?? 25,body:query.get('body') ?? 1,
       edition:query.get('edition') ?? 'red-blue',palette:query.get('palette') ?? 'original',
       headSize:query.get('size') ?? 100,splice:query.get('splice') ?? 46,
+      shiftX:query.get('x') ?? 0, overlap:query.get('overlap') ?? 3, mode:query.get('mode') ?? 'contour',
       smart:query.get('smart') !== '0'
     });
   }
@@ -537,10 +715,24 @@
       if (Array.isArray(stored)) history = stored.slice(0, 12);
     } catch (_) { history = []; }
     renderHistory();
+    try {
+      const stored = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
+      if (Array.isArray(stored)) favorites = stored.slice(0, 24);
+    } catch (_) { favorites = []; }
+    renderFavorites();
     restoreFromUrl();
-    for (const element of [refs.head, refs.body, refs.edition, refs.palette, refs.size, refs.splice, refs.smart]) {
+    for (const element of [refs.head, refs.body, refs.edition, refs.palette, refs.size, refs.splice, refs.shiftX, refs.overlap, refs.mode, refs.smart]) {
       element.addEventListener('input', scheduleRender);
       if (element.tagName === 'SELECT') element.addEventListener('change', scheduleRender);
+    }
+    for (const [searchId, select] of [['head-search', refs.head], ['body-search', refs.body]]) {
+      $(searchId).addEventListener('input', () => {
+        const term = $(searchId).value.trim().toLowerCase();
+        if (term.length < 2 && !/^#?\d+$/.test(term)) return;
+        const id = /^#?\d+$/.test(term) ? Number(term.replace('#', '')) :
+          NAMES.findIndex(name => name.toLowerCase().startsWith(term)) + 1;
+        if (id >= 1 && id <= 151 && select.value !== String(id)) {select.value = String(id); scheduleRender();}
+      });
     }
     $('swap-btn').addEventListener('click', () => {
       const a = refs.head.value; refs.head.value = refs.body.value; refs.body.value = a;
@@ -549,6 +741,7 @@
     $('random-btn').addEventListener('click', randomizedPair);
     $('reset-btn').addEventListener('click', () => {
       refs.size.value = '100'; refs.splice.value = '46'; refs.smart.checked = true;
+      refs.shiftX.value = '0'; refs.overlap.value = '3'; refs.mode.value = 'contour';
       scheduleRender();
     });
     $('clear-history').addEventListener('click', () => {
@@ -558,6 +751,7 @@
       setStatus('Recent fusion history cleared');
     });
     $('share-btn').addEventListener('click', copyShareLink);
+    refs.favorite.addEventListener('click', toggleFavorite);
     refs.download.addEventListener('click', exportPNG);
     window.addEventListener('popstate', () => {restoreFromUrl();scheduleRender();});
     scheduleRender();
