@@ -56,6 +56,31 @@ def main():
             assert page.locator('#head-select option').count() == 151
             assert page.locator('#body-select option').count() == 151
             assert page.locator('#fusion-name').inner_text()
+            assert page.locator('.variant-item').count() == 4
+            assert page.locator('#pokemon-list option').count() == 151
+            # User-adjusted image output and restoration through URL settings.
+            page.locator('#head-search').fill('Mewtwo')
+            page.wait_for_function("document.querySelector('#head-select').value === '150' && !document.querySelector('#download-btn').disabled")
+            page.locator('#head-search').fill('Pikachu')
+            page.wait_for_function("document.querySelector('#head-select').value === '25' && !document.querySelector('#download-btn').disabled")
+            page.locator('#shift-x').fill('12')
+            page.wait_for_function("document.querySelector('#status-text').textContent.includes('Fusion complete')")
+            page.wait_for_timeout(130)
+            assert page.locator('#shift-x-value').inner_text() == '+12 PX'
+            assert 'x=12' in page.url or page.url == 'about:blank', 'Unexpected share URL behavior'
+            page.locator('#shift-x').fill('0')
+            page.wait_for_timeout(180)
+            page.locator('#favorite-btn').click()
+            assert page.locator('.favorites-section .recent-item').count() == 1
+            assert page.locator('#favorite-btn').get_attribute('aria-pressed') == 'true'
+            page.locator('#mode').select_option('graft')
+            page.wait_for_function("document.querySelector('#mode').value === 'graft' && !document.querySelector('#download-btn').disabled")
+            page.locator('.variant-item').first.click()
+            page.wait_for_function("document.querySelector('#mode').value === 'classic' && !document.querySelector('#download-btn').disabled")
+            assert page.locator('.variant-item').count() == 4
+            page.locator('#mode').select_option('contour')
+            page.wait_for_function("document.querySelector('#mode').value === 'contour' && !document.querySelector('#download-btn').disabled")
+            page.locator('#head-search').fill('')
             pixels = page.evaluate('''() => {
                 let c=document.querySelector('#fusion-canvas'), d=c.getContext('2d').getImageData(0,0,96,96).data;
                 let n=0, colors=new Set();
@@ -90,6 +115,7 @@ def main():
             assert page.locator('.recent-item').count() >= 2
             page.screenshot(path=str(ROOT / 'tests' / 'preview.png'), full_page=True)
             assert not errors, errors
+            assert page.locator('#favorite-btn').is_enabled()
 
             # Verify portable all-in-one page runs without separate scripts/styles.
             portable = browser.new_page(viewport={'width': 390, 'height': 844})
@@ -104,7 +130,7 @@ def main():
             portable.screenshot(path=str(ROOT / 'tests' / 'mobile-preview.png'), full_page=True)
             assert not portable_errors, portable_errors
             portable.close()
-            print('PASS: 151 selections, fusion pixels, swap, palette, transparent 768px download, random, history, standalone HTML, mobile layout, no browser errors')
+            print('PASS v2: 151 searches, contour/classic/graft modes, four mutations, favorites, sliders, palette, PNG, random, history, standalone, mobile, no JS errors')
             browser.close()
 
 
