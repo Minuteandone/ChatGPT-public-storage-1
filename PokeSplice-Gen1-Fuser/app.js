@@ -5,16 +5,18 @@
   const $ = id => document.getElementById(id);
   const refs = {
     head: $('head-select'), body: $('body-select'), edition: $('edition'), palette: $('palette'),
-    size: $('head-size'), splice: $('splice'), smart: $('auto-seam'), canvas: $('fusion-canvas'),
+    size: $('head-size'), splice: $('splice'), shiftX: $('shift-x'), overlap: $('overlap'), mode: $('mode'), smart: $('auto-seam'), canvas: $('fusion-canvas'),
     headPreview: $('head-preview'), bodyPreview: $('body-preview'), loader: $('loader'),
     error: $('error-msg'), status: $('status-text'), name: $('fusion-name'), details: $('fusion-details'),
-    recent: $('recent-grid'), download: $('download-btn')
+    recent: $('recent-grid'), variants: $('variant-grid'), favoritesGrid: $('favorites-grid'), favorite: $('favorite-btn'), download: $('download-btn')
   };
   const STORAGE_KEY = 'pokesplice.gen1.history.v1';
+  const FAVORITES_KEY = 'pokesplice.gen1.favorites.v2';
   const cache = new Map();
   let currentRender = 0;
   let timer = 0;
   let history = [];
+  let favorites = [];
   let isReady = false;
   const numeric = (v, fallback, lo, hi) => Number.isFinite(Number(v)) ? Math.max(lo, Math.min(hi, Number(v))) : fallback;
   const pad = n => String(n).padStart(3, '0');
@@ -45,7 +47,8 @@
     return {
       head: Number(refs.head.value), body: Number(refs.body.value),
       edition: refs.edition.value, palette: refs.palette.value,
-      headSize: Number(refs.size.value), splice: Number(refs.splice.value), smart: refs.smart.checked
+      headSize: Number(refs.size.value), splice: Number(refs.splice.value), shiftX: Number(refs.shiftX.value),
+      overlap: Number(refs.overlap.value), mode: refs.mode.value, smart: refs.smart.checked
     };
   }
   function nameFor(a, b) {
@@ -66,6 +69,13 @@
     refs.details.textContent = `${NAMES[v.head - 1]} head · ${NAMES[v.body - 1]} body`;
     $('head-size-value').textContent = `${v.headSize}%`;
     $('splice-value').textContent = `${v.splice}%`;
+    $('shift-x-value').textContent = v.shiftX === 0 ? 'CENTERED' : `${v.shiftX > 0 ? '+' : ''}${v.shiftX} PX`;
+    $('overlap-value').textContent = `${v.overlap} PX`;
+    $('mode-description').textContent = {
+      contour: 'Curved, pixel-precise cuts follow each silhouette for a smoother neck.',
+      graft: 'Contour splice plus visible side features from the body donor.',
+      classic: 'The original simple horizontal splice, preserved for comparison.'
+    }[v.mode];
     for (const [preview, id] of [[refs.headPreview, v.head], [refs.bodyPreview, v.body]]) {
       preview.dataset.fallback = '0';
       preview.onerror = () => {
@@ -84,7 +94,7 @@
     refs.status.style.color = error ? '#ff9d91' : '';
   }
   function saveHistory(v) {
-    const key = JSON.stringify(v);
+    const key = `${v.head}:${v.body}:${v.edition}:${v.mode}`;
     const png = refs.canvas.toDataURL('image/png');
     history = [{ ...v, key, png }, ...history.filter(item => item.key !== key)].slice(0, 12);
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); }
@@ -92,15 +102,18 @@
     renderHistory();
   }
   function renderHistory() {
-    refs.recent.replaceChildren();
-    if (!history.length) {
+    renderCollection(refs.recent, history, 'Your experiments will appear here.');
+  }
+  function renderCollection(container, items, emptyText) {
+    container.replaceChildren();
+    if (!items.length) {
       const div = document.createElement('div');
       div.className = 'recent-empty';
-      div.textContent = 'Your experiments will appear here.';
-      refs.recent.appendChild(div);
+      div.textContent = emptyText;
+      container.appendChild(div);
       return;
     }
-    for (const item of history) {
+    for (const item of items) {
       if (!(item.head >= 1 && item.head <= 151 && item.body >= 1 && item.body <= 151) || typeof item.png !== 'string') continue;
       const button = document.createElement('button');
       button.type = 'button';
@@ -116,7 +129,60 @@
       title.textContent = nameFor(item.head, item.body);
       button.append(frame, title);
       button.addEventListener('click', () => { applyValues(item); scheduleRender(); window.scrollTo({top:0,behavior:'smooth'}); });
-      refs.recent.appendChild(button);
+      container.appendChild(button);
+    }
+  }
+  function favoriteKey(v) {
+    return JSON.stringify([v.head,v.body,v.edition,v.palette,v.headSize,v.splice,v.shiftX,v.overlap,v.mode,v.smart]);
+  }
+  function updateFavoriteButton(v) {
+    const saved = favorites.some(item => item.key === favoriteKey(v));
+    refs.favorite.textContent = saved ? '★ SAVED' : '☆ SAVE';
+    refs.favorite.setAttribute('aria-pressed', saved ? 'true' : 'false');
+  }
+  function renderFavorites() {
+    renderCollection(refs.favoritesGrid, favorites, 'Tap ☆ SAVE on a fusion you want to keep.');
+  }
+  function toggleFavorite() {
+    if (!isReady) return;
+    const v = values(), key = favoriteKey(v);
+    const existing = favorites.findIndex(item => item.key === key);
+    if (existing >= 0) {
+      favorites.splice(existing, 1);
+      setStatus('☆ Removed from favorites');
+    } else {
+      favorites.unshift({...v, key, png:refs.canvas.toDataURL('image/png')});
+      favorites = favorites.slice(0, 24);
+      setStatus('★ Saved to your local favorites');
+    }
+    try {localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));} catch (_) {
+      setStatus('Favorites available for this session; browser storage unavailable.', true);
+    }
+    updateFavoriteButton(v);
+    renderFavorites();
+  }
+  function renderVariants(head, body, current) {
+    refs.variants.replaceChildren();
+    const recipes = [
+      ['Classic', {mode:'classic', headSize:100, splice:46, shiftX:0, overlap:3}],
+      ['Contour', {mode:'contour', headSize:100, splice:46, shiftX:0, overlap:3}],
+      ['Big head', {mode:'contour', headSize:125, splice:40, shiftX:0, overlap:4}],
+      ['Graft', {mode:'graft', headSize:92, splice:53, shiftX:0, overlap:5}]
+    ];
+    for (const [title, patch] of recipes) {
+      const v = {...current,...patch};
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'variant-item';
+      button.title = `Try ${title.toLowerCase()} fusion`;
+      button.setAttribute('aria-label', `Use ${title} fusion`);
+      button.setAttribute('aria-current', Object.keys(patch).every(k => current[k] === patch[k]) ? 'true' : 'false');
+      const canvas = document.createElement('canvas');
+      canvas.width = 96; canvas.height = 96;
+      window.FusionEngine.fuse(head, body, canvas, v);
+      const label = document.createElement('strong'); label.textContent = title;
+      button.append(canvas, label);
+      button.addEventListener('click', () => {applyValues(v); scheduleRender();});
+      refs.variants.appendChild(button);
     }
   }
   function applyValues(v) {
@@ -126,6 +192,9 @@
     if (['original', 'gameboy', 'blue', 'red', 'sepia'].includes(v.palette)) refs.palette.value = v.palette;
     refs.size.value = String(numeric(v.headSize, 100, 65, 150));
     refs.splice.value = String(numeric(v.splice, 46, 30, 64));
+    refs.shiftX.value = String(numeric(v.shiftX, 0, -18, 18));
+    refs.overlap.value = String(numeric(v.overlap, 3, 0, 12));
+    refs.mode.value = ['classic', 'contour', 'graft'].includes(v.mode) ? v.mode : 'contour';
     refs.smart.checked = v.smart !== false && v.smart !== 'false' && v.smart !== '0';
   }
   function scheduleRender() {
@@ -133,7 +202,9 @@
     const v = values();
     updateChrome(v);
     const token = ++currentRender;
+    isReady = false;
     refs.download.disabled = true;
+    refs.favorite.disabled = true;
     refs.loader.hidden = false;
     refs.error.hidden = true;
     setStatus('Splicing specimens…');
@@ -147,16 +218,20 @@
       if (token !== currentRender) return;
       isReady = true;
       refs.download.disabled = false;
+      refs.favorite.disabled = false;
       refs.loader.hidden = true;
       setStatus('✓ Fusion complete · generated locally in your browser');
       refs.error.hidden = true;
       updateUrl(v);
       saveHistory(v);
+      renderVariants(head, body, v);
+      updateFavoriteButton(v);
     } catch (error) {
       if (token !== currentRender) return;
       isReady = false;
       refs.loader.hidden = true;
       refs.download.disabled = true;
+      refs.favorite.disabled = true;
       refs.error.hidden = false;
       refs.error.textContent = `Sprite loading failed: ${error.message}`;
       setStatus('Unable to complete fusion', true);
@@ -170,6 +245,9 @@
     if (v.palette !== 'original') params.set('palette', v.palette);
     if (v.headSize !== 100) params.set('size', String(v.headSize));
     if (v.splice !== 46) params.set('splice', String(v.splice));
+    if (v.mode !== 'contour') params.set('mode', v.mode);
+    if (v.shiftX !== 0) params.set('x', String(v.shiftX));
+    if (v.overlap !== 3) params.set('overlap', String(v.overlap));
     if (!v.smart) params.set('smart', '0');
     const url = `${location.pathname}?${params.toString()}${location.hash}`;
     try { historyApiReplace(url); } catch (_) { /* Embedded browsers can restrict URL changes. */ }
@@ -200,7 +278,12 @@
     scheduleRender();
   }
   function populateNames() {
+    const namesList = $('pokemon-list');
     for (let i = 0; i < NAMES.length; i++) {
+      const suggestion = document.createElement('option');
+      suggestion.value = NAMES[i];
+      suggestion.label = `#${pad(i + 1)}`;
+      namesList.appendChild(suggestion);
       for (const select of [refs.head, refs.body]) {
         const option = new Option(`#${pad(i + 1)} ${NAMES[i]}`, String(i + 1));
         select.appendChild(option);
@@ -213,6 +296,7 @@
       head:query.get('head') ?? 25,body:query.get('body') ?? 1,
       edition:query.get('edition') ?? 'red-blue',palette:query.get('palette') ?? 'original',
       headSize:query.get('size') ?? 100,splice:query.get('splice') ?? 46,
+      shiftX:query.get('x') ?? 0, overlap:query.get('overlap') ?? 3, mode:query.get('mode') ?? 'contour',
       smart:query.get('smart') !== '0'
     });
   }
@@ -238,10 +322,24 @@
       if (Array.isArray(stored)) history = stored.slice(0, 12);
     } catch (_) { history = []; }
     renderHistory();
+    try {
+      const stored = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
+      if (Array.isArray(stored)) favorites = stored.slice(0, 24);
+    } catch (_) { favorites = []; }
+    renderFavorites();
     restoreFromUrl();
-    for (const element of [refs.head, refs.body, refs.edition, refs.palette, refs.size, refs.splice, refs.smart]) {
+    for (const element of [refs.head, refs.body, refs.edition, refs.palette, refs.size, refs.splice, refs.shiftX, refs.overlap, refs.mode, refs.smart]) {
       element.addEventListener('input', scheduleRender);
       if (element.tagName === 'SELECT') element.addEventListener('change', scheduleRender);
+    }
+    for (const [searchId, select] of [['head-search', refs.head], ['body-search', refs.body]]) {
+      $(searchId).addEventListener('input', () => {
+        const term = $(searchId).value.trim().toLowerCase();
+        if (term.length < 2 && !/^#?\d+$/.test(term)) return;
+        const id = /^#?\d+$/.test(term) ? Number(term.replace('#', '')) :
+          NAMES.findIndex(name => name.toLowerCase().startsWith(term)) + 1;
+        if (id >= 1 && id <= 151 && select.value !== String(id)) {select.value = String(id); scheduleRender();}
+      });
     }
     $('swap-btn').addEventListener('click', () => {
       const a = refs.head.value; refs.head.value = refs.body.value; refs.body.value = a;
@@ -250,6 +348,7 @@
     $('random-btn').addEventListener('click', randomizedPair);
     $('reset-btn').addEventListener('click', () => {
       refs.size.value = '100'; refs.splice.value = '46'; refs.smart.checked = true;
+      refs.shiftX.value = '0'; refs.overlap.value = '3'; refs.mode.value = 'contour';
       scheduleRender();
     });
     $('clear-history').addEventListener('click', () => {
@@ -259,6 +358,7 @@
       setStatus('Recent fusion history cleared');
     });
     $('share-btn').addEventListener('click', copyShareLink);
+    refs.favorite.addEventListener('click', toggleFavorite);
     refs.download.addEventListener('click', exportPNG);
     window.addEventListener('popstate', () => {restoreFromUrl();scheduleRender();});
     scheduleRender();
