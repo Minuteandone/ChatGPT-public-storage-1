@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#161d29">
+  <meta name="description" content="Fuse any two of the original 151 Pokémon in your browser using pixel sprites from Generation I.">
+  <title>POKÉ//SPLICE — Gen I Fusion Lab</title>
+  <style>
+:root{color-scheme:dark;--bg:#141b26;--panel:#1d2734;--panel-alt:#202c3a;--ink:#f5f2e7;--muted:#a0adbb;--line:#394555;--accent:#ff826f;--accent-light:#ffac92;--teal:#8ddcc6;--cream:#e7dfbd;--pixel:#273545;--shadow:0 16px 50px #050a1270}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{background:var(--bg);color:var(--ink);margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;line-height:1.48;min-height:100vh}body:before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(#ffffff04 1px,transparent 1px),linear-gradient(90deg,#ffffff04 1px,transparent 1px);background-size:36px 36px;opacity:.5}.page-glow{position:absolute;z-index:-1;top:20px;right:8%;width:450px;height:450px;background:#ff826f10;filter:blur(90px);pointer-events:none}.app-shell{max-width:1240px;margin:auto;padding:0 36px 25px}a{color:var(--teal)}button,select,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.48}.topbar{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:24px 0;gap:16px}.brand{display:flex;align-items:center;gap:12px}.brand-ball{height:34px;width:34px;border:3px solid var(--ink);border-radius:50%;position:relative;transform:rotate(-15deg);background:linear-gradient(to bottom,var(--accent) 45%,var(--ink) 45%,var(--ink) 55%,var(--panel) 55%)}.brand-ball span{position:absolute;border:3px solid var(--ink);background:var(--bg);width:13px;height:13px;left:8px;top:8px;border-radius:50%}.brand-name{font-size:20px;font-weight:900;letter-spacing:-1px;white-space:nowrap}.brand-name .slash{color:var(--accent)}.brand-name small{font-size:10px;font-weight:normal;letter-spacing:1px;vertical-align:super;color:var(--muted);margin-left:5px}.header-caption,.header-version{font-size:10px;letter-spacing:1.8px;color:var(--muted)}.header-caption{display:flex;align-items:center;gap:9px}.header-version{color:#6f8497}.status-dot,.result-live span{width:7px;height:7px;background:var(--teal);border-radius:50%;display:inline-block;box-shadow:0 0 13px #8ddcc677}.intro{display:flex;justify-content:space-between;align-items:center;padding:52px 0 44px;gap:18px}.eyebrow{margin:0;color:var(--teal);font-size:11px;font-weight:bold;letter-spacing:2px}.intro h1{font-size:clamp(38px,5.4vw,68px);line-height:1.12;letter-spacing:-3.7px;margin:13px 0 15px;font-weight:850}.intro h1 em{color:var(--accent);font-style:normal}.subtitle{color:var(--muted);font-family:system-ui,sans-serif;font-size:15px;max-width:520px;line-height:1.7;margin:0}.intro-stamp{flex-shrink:0;width:184px;height:184px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #ff826f88;outline:1px solid #394555;outline-offset:8px;transform:rotate(11deg);background:radial-gradient(circle,#ff826f14,transparent)}.intro-stamp span{color:var(--accent);font-size:12px}.intro-stamp strong{font-size:35px;letter-spacing:-2px}.intro-stamp small{letter-spacing:3px;color:var(--muted);font-size:10px}.workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.02fr);gap:20px;align-items:start}.controls-panel,.result-panel,.recent-section{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:23px}.panel-head{display:flex;align-items:center;gap:10px;margin-bottom:24px}.panel-head h2{margin:0;font-size:13px;letter-spacing:1.9px;white-space:nowrap}.panel-num{color:var(--accent);border:1px solid #ff826f77;padding:3px 5px;font-size:10px}.panel-extra{font-size:10px;letter-spacing:1px;color:#7f91a4;margin-left:auto}.specimen-cards{display:flex;flex-direction:column;gap:0}.specimen-card{border:1px solid var(--line);background:#1a2430;border-radius:7px;padding:15px 16px}.specimen-top,.screen-top,.screen-bottom{display:flex;justify-content:space-between;align-items:center}.tiny-label,.specimen-id{font-size:10px;letter-spacing:1.3px;color:var(--teal)}.specimen-id{color:#9faabb}.specimen-main{display:flex;gap:18px;align-items:center;margin-top:12px}.sprite-frame{background:var(--cream);width:92px;height:92px;border:4px solid #465361;display:flex;justify-content:center;align-items:center;flex-shrink:0;image-rendering:pixelated}.sprite-frame img{max-width:77px;max-height:77px;width:80%;height:80%;object-fit:contain;image-rendering:pixelated}.specimen-select{min-width:0;flex:1}.specimen-select label,.control-group label,.range-heading label{display:block;font-size:10px;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px}.specimen-select select,.large-select{width:100%;background:#273442;border:1px solid #4b5a6a;border-radius:5px;color:var(--ink);padding:11px 32px 11px 11px;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23bdd6d0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-position:right 10px center;background-repeat:no-repeat}.specimen-select select:focus,.large-select:focus{border-color:var(--teal);box-shadow:0 0 0 3px #8ddcc623}.select-hint{font-size:10px;color:#8c9cad;display:block;margin-top:6px}.fusion-link{display:flex;align-items:center;gap:15px;margin:7px 27px;color:var(--accent);font-size:18px;font-weight:bold}.link-line{height:12px;width:1px;background:var(--line)}.action-row{display:flex;gap:11px;margin-top:18px}.button{border-radius:5px;border:1px solid transparent;padding:13px 16px;font-size:11px;font-weight:800;letter-spacing:1px;white-space:nowrap;transition:background .15s,transform .15s,border .15s}.button:active:not(:disabled){transform:translateY(2px)}.button-primary{background:var(--accent);color:#281e27;box-shadow:0 4px 0 #b65451}.button-primary:hover:not(:disabled){background:#ffab92}.button-outline{border-color:#67778b;color:var(--ink);background:#ffffff05}.button-outline:hover:not(:disabled){background:#354458;border-color:var(--teal)}.action-row .button:first-child{width:35%}.action-row .button:last-child{flex:1}.tuning-head{padding-top:33px;border-top:1px solid var(--line);margin-top:33px}.control-group{margin-bottom:19px}.hint-chip{font-size:9px;background:#37483f;color:var(--teal);padding:3px 5px;margin-left:5px;border-radius:2px;letter-spacing:.4px}.slider-group{margin:23px 0}.range-heading{display:flex;justify-content:space-between;align-items:center}.range-heading output{color:var(--teal);font-size:12px}.slider-group input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;height:7px;margin:9px 0}.range-notes{display:flex;justify-content:space-between;font-size:9px;color:#8192a4;letter-spacing:.8px}.toggle-group{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:18px;margin-top:8px}.toggle-label{font-size:10px;letter-spacing:1px}.toggle-label small{display:block;font-size:10px;color:var(--muted);letter-spacing:0;margin-top:5px}.toggle-group input{height:22px;width:22px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}.reset-link{border:0;background:none;color:var(--muted);text-decoration:underline;font-size:11px;text-underline-offset:4px;margin-top:19px;padding:0}.reset-link:hover{color:var(--teal)}.result-live{display:flex;gap:9px;align-items:center;font-size:10px;color:var(--teal);letter-spacing:.8px;margin-left:auto}.result-screen{background:var(--cream);padding:17px;color:#304051;box-shadow:inset 0 0 0 5px #c4c19f,0 12px 0 #101923;border:5px solid #657364;border-radius:8px}.screen-top,.screen-bottom{font-size:9px;font-weight:850;letter-spacing:1.3px}.canvas-wrap{height:min(35vw,330px);min-height:252px;max-height:350px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}.canvas-halo{border-radius:50%;position:absolute;width:75%;aspect-ratio:1;background:#b7c2a790;filter:blur(48px);pointer-events:none}#fusion-canvas{width:min(100%,320px);height:auto;image-rendering:pixelated;position:relative;z-index:1;filter:drop-shadow(8px 9px 0 #8b917c40)}.canvas-loader{position:absolute;z-index:3;background:#e7dfbdd9;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#304051;font-size:11px;letter-spacing:1px}.canvas-loader[hidden]{display:none}.loading-orb{width:24px;height:24px;border:4px solid #30405166;border-top-color:#ef7562;border-radius:50%;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.result-description{text-align:center;padding:30px 7px 19px}.result-description .eyebrow{font-size:10px}.result-description h2{font-size:clamp(25px,3vw,37px);line-height:1.25;margin:9px 0 6px;letter-spacing:-1.5px;overflow-wrap:anywhere}.result-description p:last-child{margin:0;color:var(--muted);font-family:system-ui,sans-serif;font-size:13px}.result-actions{display:flex;gap:10px}.result-actions button:first-child{flex:1}.status-text{margin:17px 0 0;text-align:center;font-size:10px;color:var(--teal);min-height:15px}.error-message{padding:11px;border:1px solid #fa827a;color:#ffc4ba;background:#ff6d6d12;font-size:12px;line-height:1.6}.result-notes{margin-top:22px;border-top:1px solid var(--line);padding-top:16px;display:flex;gap:10px;align-items:flex-start}.result-notes .star{color:var(--accent);font-size:21px}.result-notes p{font-size:11px;color:var(--muted);line-height:1.65;margin:0}.recent-section{margin-top:20px}.recent-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.recent-item{min-width:0;text-align:center;border:1px solid var(--line);background:#19232f;border-radius:7px;padding:8px;color:var(--ink);transition:border .15s,transform .15s}.recent-item:hover{border-color:var(--teal);transform:translateY(-3px)}.recent-thumb{width:100%;aspect-ratio:1;background:var(--cream);display:flex;align-items:center;justify-content:center;border-radius:3px;margin-bottom:7px;overflow:hidden}.recent-thumb img{display:block;image-rendering:pixelated;width:100%;height:100%;object-fit:contain}.recent-item span{font-size:10px;display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.recent-empty{grid-column:1/-1;color:var(--muted);font-size:12px;padding:28px;text-align:center;border:1px dashed var(--line)}.history-clear{margin-top:16px}.footer{display:flex;justify-content:space-between;gap:16px;padding:30px 0;color:#8b9cae;font-size:9px;letter-spacing:.5px;line-height:1.8}.footer a{color:var(--teal);text-decoration:none}@media (max-width:1040px){.app-shell{padding:0 20px 24px}.workspace{gap:14px}.controls-panel,.result-panel,.recent-section{padding:18px}.result-actions{flex-direction:column}.result-actions button{width:100%}.recent-grid{grid-template-columns:repeat(4,1fr)}}@media (max-width:780px){.topbar{padding:20px 0}.header-caption{display:none}.intro{padding:36px 0;align-items:flex-start}.intro h1{letter-spacing:-2px}.intro-stamp{width:123px;height:123px;margin-right:12px}.intro-stamp strong{font-size:24px}.workspace{grid-template-columns:1fr}.result-screen{max-width:570px;margin:auto}.canvas-wrap{height:330px}.recent-grid{grid-template-columns:repeat(4,1fr)}}@media (max-width:480px){.app-shell{padding:0 12px 18px}.brand-name{font-size:18px}.intro h1{font-size:38px}.intro-stamp{display:none}.intro{padding:33px 0}.controls-panel,.result-panel,.recent-section{padding:14px}.panel-head h2{font-size:11px;letter-spacing:.9px}.panel-extra{font-size:9px}.specimen-main{gap:10px}.sprite-frame{width:75px;height:75px}.specimen-select select{font-size:11px}.action-row .button{font-size:10px;padding:13px 10px}.canvas-wrap{height:270px;min-height:230px}.recent-grid{grid-template-columns:repeat(3,1fr);gap:8px}.footer{flex-direction:column}.result-live{font-size:8px}}@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+</style>
+</head>
+<body>
+  <div class="page-glow" aria-hidden="true"></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Poké Splice">
+        <div class="brand-ball" aria-hidden="true"><span></span></div>
+        <div class="brand-name">POKÉ<span class="slash">//</span>SPLICE <small>LAB 001</small></div>
+      </div>
+      <div class="header-caption"><span class="status-dot"></span> GEN I SPRITE EXPERIMENT <span class="header-version">/ v1.0</span></div>
+    </header>
+
+    <main>
+      <div class="intro">
+        <div>
+          <p class="eyebrow">THE ORIGINAL 151 · ∞ COMBINATIONS</p>
+          <h1>Make something<br><em>that shouldn't exist.</em></h1>
+          <p class="subtitle">Two classic sprites. One questionable scientific achievement. Automatic pixel-art fusion, entirely in your browser.</p>
+        </div>
+        <div class="intro-stamp" aria-hidden="true"><span>151 × 151</span><strong>22,801</strong><small>PAIRINGS</small></div>
+      </div>
+
+      <div class="workspace">
+        <section class="controls-panel" aria-label="Fusion controls">
+          <div class="panel-head"><span class="panel-num">01</span><h2>SPECIMENS</h2><span class="panel-extra">INPUT</span></div>
+          <div class="specimen-cards">
+            <div class="specimen-card">
+              <div class="specimen-top"><span class="tiny-label">A / HEAD DONOR</span><span class="specimen-id" id="head-id">#025</span></div>
+              <div class="specimen-main"><div class="sprite-frame"><img id="head-preview" alt="Head donor sprite"></div><div class="specimen-select"><label for="head-select">HEAD FROM</label><select id="head-select"></select><span class="select-hint">Face and upper features</span></div></div>
+            </div>
+            <div class="fusion-link" aria-hidden="true"><div class="link-line"></div><span>+</span><div class="link-line"></div></div>
+            <div class="specimen-card">
+              <div class="specimen-top"><span class="tiny-label">B / BODY DONOR</span><span class="specimen-id" id="body-id">#001</span></div>
+              <div class="specimen-main"><div class="sprite-frame"><img id="body-preview" alt="Body donor sprite"></div><div class="specimen-select"><label for="body-select">BODY FROM</label><select id="body-select"></select><span class="select-hint">Torso and lower features</span></div></div>
+            </div>
+          </div>
+          <div class="action-row">
+            <button class="button button-outline" id="swap-btn" type="button"><span aria-hidden="true">⇄</span> SWAP</button>
+            <button class="button button-primary" id="random-btn" type="button"><span aria-hidden="true">✦</span> RANDOM FUSION</button>
+          </div>
+
+          <div class="panel-head tuning-head"><span class="panel-num">02</span><h2>SPLICE SETTINGS</h2><span class="panel-extra">LIVE</span></div>
+          <div class="control-group">
+            <label for="edition">SPRITE EDITION <span class="hint-chip">ORIGINAL ART</span></label>
+            <select id="edition" class="large-select">
+              <option value="red-blue">Red / Blue · 1996–98</option>
+              <option value="yellow">Yellow · 1998</option>
+              <option value="red-green-japan">Red / Green · Japan 1996</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="palette">COLOR TREATMENT</label>
+            <select id="palette" class="large-select">
+              <option value="original">Original sprite colors</option>
+              <option value="gameboy">Classic Game Boy green</option>
+              <option value="blue">Pocket blue</option>
+              <option value="red">Pocket red</option>
+              <option value="sepia">Old-school gold</option>
+            </select>
+          </div>
+          <div class="slider-group">
+            <div class="range-heading"><label for="head-size">HEAD SIZE</label><output id="head-size-value" for="head-size">100%</output></div>
+            <input type="range" id="head-size" min="65" max="150" step="5" value="100">
+            <div class="range-notes"><span>TINY</span><span>ABSOLUTE UNIT</span></div>
+          </div>
+          <div class="slider-group">
+            <div class="range-heading"><label for="splice">SPLICE HEIGHT</label><output id="splice-value" for="splice">46%</output></div>
+            <input type="range" id="splice" min="30" max="64" step="2" value="46">
+            <div class="range-notes"><span>MORE HEAD</span><span>MORE BODY</span></div>
+          </div>
+          <div class="toggle-group"><label class="toggle-label" for="auto-seam">SMART SEAM DETECTION <small>Automatically find a narrower place to join</small></label><input type="checkbox" id="auto-seam" checked></div>
+          <button class="reset-link" id="reset-btn" type="button">↺ Reset adjustments</button>
+        </section>
+
+        <section class="result-panel" aria-label="Fusion result">
+          <div class="panel-head"><span class="panel-num">03</span><h2>THE EXPERIMENT</h2><span class="result-live"><span></span> LIVE PREVIEW</span></div>
+          <div class="result-screen">
+            <div class="screen-top"><span id="result-number">NO. 025 × 001</span><span>POKÉ//SPLICE</span></div>
+            <div class="canvas-wrap"><div class="canvas-halo" aria-hidden="true"></div><canvas id="fusion-canvas" width="96" height="96" role="img" aria-label="Generated fused Pokémon"></canvas><div id="loader" class="canvas-loader" hidden><span class="loading-orb"></span><span>LOADING SPRITES...</span></div></div>
+            <div class="screen-bottom"><span>CLASSIFIED: UNOFFICIAL</span><span>96 × 96 PX</span></div>
+          </div>
+          <div class="result-description">
+            <p class="eyebrow">NEWLY DISCOVERED SPECIES (?)</p>
+            <h2 id="fusion-name">Pikasaur</h2>
+            <p id="fusion-details">Pikachu head · Bulbasaur body</p>
+          </div>
+          <p class="error-message" id="error-msg" role="alert" hidden></p>
+          <div class="result-actions">
+            <button class="button button-primary" id="download-btn" type="button" disabled>↓ DOWNLOAD PNG</button>
+            <button class="button button-outline" id="share-btn" type="button">↗ COPY LINK</button>
+          </div>
+          <p id="status-text" class="status-text" role="status" aria-live="polite">Loading your first fusion…</p>
+          <div class="result-notes"><span class="star">✳</span><p>Each fusion is cut and assembled from real Gen I pixel sprites—no pre-made combinations, no AI image generator, no server-side processing. Strange anatomy is a feature, probably.</p></div>
+        </section>
+      </div>
+
+      <section class="recent-section" aria-label="Recent fusions">
+        <div class="panel-head"><span class="panel-num">04</span><h2>RECENT MUTATIONS</h2><span class="panel-extra">SAVED LOCALLY</span></div>
+        <div id="recent-grid" class="recent-grid"><div class="recent-empty">Your experiments will appear here.</div></div>
+        <button type="button" class="reset-link history-clear" id="clear-history">Clear history</button>
+      </section>
+    </main>
+    <footer class="footer"><span>A FAN-MADE PIXEL EXPERIMENT. NOT AFFILIATED WITH NINTENDO, GAME FREAK, OR THE POKÉMON COMPANY.</span><span>SPRITE SOURCE: <a href="https://github.com/PokeAPI/sprites" target="_blank" rel="noopener noreferrer">POKÉAPI / SPRITES ↗</a></span></footer>
+  </div>
+<script>
+/* Pixel fusion engine — no backend, ML inference, canvas libraries, or pre-made fusion images. */
+(function (global) {
+  'use strict';
+  const SIZE = 96;
+  const PALETTES = {
+    gameboy: ['#0f380f', '#306230', '#8bac0f', '#9bbc0f'],
+    blue: ['#172b51', '#36629b', '#80b8d0', '#d9edf0'],
+    red: ['#4b2034', '#9b4c59', '#e89c85', '#f9dac3'],
+    sepia: ['#362a24', '#77604d', '#bba478', '#f5e9c3']
+  };
+  function makeCanvas(width, height) {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    return canvas;
+  }
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  function looksLikeWhiteBg(data, at) {
+    const a = data[at + 3];
+    if (a < 20) return true;
+    const r = data[at], g = data[at + 1], b = data[at + 2];
+    return r > 237 && g > 237 && b > 237 && Math.max(r, g, b) - Math.min(r, g, b) < 16;
+  }
+  function extract(image) {
+    const width = image.naturalWidth || image.width;
+    const height = image.naturalHeight || image.height;
+    if (!width || !height || width > 512 || height > 512) throw new Error('Unable to read sprite pixels.');
+    const source = makeCanvas(width, height);
+    const context = source.getContext('2d', { willReadFrequently: true });
+    context.imageSmoothingEnabled = false;
+    context.drawImage(image, 0, 0);
+    const pixels = context.getImageData(0, 0, width, height);
+    const data = pixels.data;
+    const count = width * height;
+    let transparent = false;
+    for (let i = 0; i < count; i++) if (data[i * 4 + 3] < 20) { transparent = true; break; }
+    // Some image archives use opaque white backgrounds; flood-fill just the exterior
+    // so white eyes, claws, and internal details are preserved.
+    if (!transparent) {
+      const seen = new Uint8Array(count);
+      const queue = new Int32Array(count);
+      let start = 0, end = 0;
+      function enqueue(x, y) {
+        if (x < 0 || y < 0 || x >= width || y >= height) return;
+        const i = y * width + x;
+        if (seen[i] || !looksLikeWhiteBg(data, i * 4)) return;
+        seen[i] = 1;
+        queue[end++] = i;
+      }
+      for (let x = 0; x < width; x++) { enqueue(x, 0); enqueue(x, height - 1); }
+      for (let y = 0; y < height; y++) { enqueue(0, y); enqueue(width - 1, y); }
+      while (start < end) {
+        const i = queue[start++], x = i % width, y = Math.floor(i / width);
+        enqueue(x - 1, y); enqueue(x + 1, y); enqueue(x, y - 1); enqueue(x, y + 1);
+      }
+      for (let i = 0; i < count; i++) if (seen[i]) data[i * 4 + 3] = 0;
+    }
+    let minX = width, minY = height, maxX = -1, maxY = -1;
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+      if (data[(y * width + x) * 4 + 3] < 20) continue;
+      minX = Math.min(minX, x); minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+    }
+    if (maxX < 0) throw new Error('A sprite was blank, so it cannot be fused.');
+    context.putImageData(pixels, 0, 0);
+    const sw = maxX - minX + 1, sh = maxY - minY + 1;
+    const cropped = makeCanvas(sw, sh);
+    cropped.getContext('2d').drawImage(source, minX, minY, sw, sh, 0, 0, sw, sh);
+    const cutData = cropped.getContext('2d', {willReadFrequently:true}).getImageData(0, 0, sw, sh).data;
+    const rowCounts = new Array(sh).fill(0);
+    const rowCenters = new Array(sh).fill(sw / 2);
+    for (let y = 0; y < sh; y++) {
+      let sum = 0, qty = 0;
+      for (let x = 0; x < sw; x++) {
+        if (cutData[(y * sw + x) * 4 + 3] < 20) continue;
+        qty++; sum += x + .5;
+      }
+      rowCounts[y] = qty;
+      if (qty) rowCenters[y] = sum / qty;
+    }
+    return { canvas: cropped, width: sw, height: sh, rowCounts, rowCenters };
+  }
+  function seamAt(sprite, fraction, smart) {
+    const h = sprite.height;
+    const goal = clamp(Math.round(h * fraction), 2, h - 2);
+    if (!smart || h < 16) return goal;
+    const radius = Math.max(2, Math.round(h * .085));
+    const from = clamp(goal - radius, 2, h - 2);
+    const to = clamp(goal + radius, 2, h - 2);
+    let best = goal, bestScore = Infinity;
+    for (let y = from; y <= to; y++) {
+      // Prefer a natural narrowing of the silhouette near the requested split.
+      // Avoid seeking excessively far from the manual preference.
+      const local = (sprite.rowCounts[y - 1] + sprite.rowCounts[y] + sprite.rowCounts[y + 1]) / 3;
+      const score = local + Math.abs(y - goal) * 1.25;
+      if (score < bestScore) { best = y; bestScore = score; }
+    }
+    return best;
+  }
+  function jointCenter(sprite, from, to) {
+    let weightedSum = 0, weight = 0;
+    for (let y = Math.max(0, from); y <= Math.min(sprite.height - 1, to); y++) {
+      const w = sprite.rowCounts[y];
+      weightedSum += sprite.rowCenters[y] * w;
+      weight += w;
+    }
+    return weight ? weightedSum / weight : sprite.width / 2;
+  }
+  function recolor(canvas, paletteName) {
+    const stops = PALETTES[paletteName];
+    if (!stops) return;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    const image = context.getImageData(0, 0, canvas.width, canvas.height);
+    const data = image.data;
+    const colors = stops.map(hex => [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)]);
+    // Classic four-ink palette, quantized from source luminance.
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] < 20) continue;
+      const lum = .2126 * data[i] + .7152 * data[i + 1] + .0722 * data[i + 2];
+      const bucket = lum < 71 ? 0 : lum < 143 ? 1 : lum < 213 ? 2 : 3;
+      data[i] = colors[bucket][0];
+      data[i + 1] = colors[bucket][1];
+      data[i + 2] = colors[bucket][2];
+    }
+    context.putImageData(image, 0, 0);
+  }
+  function fuse(headImage, bodyImage, output, options = {}) {
+    if (!output || typeof output.getContext !== 'function') throw new Error('Missing result canvas.');
+    const head = extract(headImage), body = extract(bodyImage);
+    const fraction = clamp(Number(options.splice ?? 46) / 100, .3, .64);
+    const requestedHeadSize = clamp(Number(options.headSize ?? 100) / 100, .65, 1.5);
+    const smart = options.smart !== false;
+    const headCut = seamAt(head, fraction + .04, smart);
+    const bodyCut = seamAt(body, fraction - .07, smart);
+    const context = output.getContext('2d', { willReadFrequently: true });
+    output.width = SIZE; output.height = SIZE;
+    context.clearRect(0, 0, SIZE, SIZE);
+    context.imageSmoothingEnabled = false;
+
+    const bodyScale = Math.min(1.48, 67 / body.width, 69 / body.height);
+    const bodyX = Math.round((SIZE - body.width * bodyScale) / 2);
+    const bodyY = Math.round(84 - body.height * bodyScale);
+    const bodyJointY = Math.round(bodyY + bodyCut * bodyScale);
+    const bodyJointX = bodyX + jointCenter(body, bodyCut, bodyCut + 4) * bodyScale;
+    const bodyLowerHeight = body.height - bodyCut;
+    if (bodyLowerHeight > 0) context.drawImage(body.canvas,
+      0, bodyCut, body.width, bodyLowerHeight,
+      bodyX, bodyJointY, Math.round(body.width * bodyScale), Math.round(bodyLowerHeight * bodyScale));
+
+    // Scale the upper region relative to the body, then align the head's lower
+    // silhouette centroid to the body's upper silhouette centroid.
+    const fitWidth = Math.min(1.55, 47 / head.width, (body.width * bodyScale * 1.02) / head.width);
+    const fitHeight = Math.min(1.6, 43 / Math.max(headCut, 1));
+    const headScale = Math.min(fitWidth, fitHeight) * requestedHeadSize;
+    const headW = Math.max(1, Math.round(head.width * headScale));
+    const headH = Math.max(1, Math.round(headCut * headScale));
+    const headJoint = jointCenter(head, headCut - 5, headCut - 1);
+    let headX = Math.round(bodyJointX - headJoint * headScale);
+    let headY = Math.round(bodyJointY - headH + Math.max(2, Math.round(3 * bodyScale)));
+    headX = clamp(headX, 2, Math.max(2, SIZE - 2 - headW));
+    headY = clamp(headY, 2, Math.max(2, SIZE - 5 - headH));
+
+    // Very short pixel connector behind head for disconnected anatomy.
+    // Most sprites already overlap, but this helps narrow/thin necks.
+    const jointGap = bodyJointY - (headY + headH);
+    if (jointGap > 0 && jointGap < 9) {
+      const center = Math.round((bodyJointX + headX + headJoint * headScale) / 2);
+      context.fillStyle = '#353d42';
+      context.fillRect(center - 3, headY + headH - 1, 6, jointGap + 3);
+      context.fillStyle = '#9fa397';
+      context.fillRect(center - 2, headY + headH, 4, jointGap + 2);
+    }
+    context.drawImage(head.canvas, 0, 0, head.width, headCut, headX, headY, headW, headH);
+    recolor(output, options.palette || 'original');
+    return { headCut, bodyCut, pixels: SIZE, headScale, bodyScale };
+  }
+  global.FusionEngine = Object.freeze({ fuse, extract, seamAt, PALETTES, SIZE });
+})(window);
+
+</script>
+<script>
+(() => {
+  'use strict';
+  const NAMES = `Bulbasaur|Ivysaur|Venusaur|Charmander|Charmeleon|Charizard|Squirtle|Wartortle|Blastoise|Caterpie|Metapod|Butterfree|Weedle|Kakuna|Beedrill|Pidgey|Pidgeotto|Pidgeot|Rattata|Raticate|Spearow|Fearow|Ekans|Arbok|Pikachu|Raichu|Sandshrew|Sandslash|Nidoran♀|Nidorina|Nidoqueen|Nidoran♂|Nidorino|Nidoking|Clefairy|Clefable|Vulpix|Ninetales|Jigglypuff|Wigglytuff|Zubat|Golbat|Oddish|Gloom|Vileplume|Paras|Parasect|Venonat|Venomoth|Diglett|Dugtrio|Meowth|Persian|Psyduck|Golduck|Mankey|Primeape|Growlithe|Arcanine|Poliwag|Poliwhirl|Poliwrath|Abra|Kadabra|Alakazam|Machop|Machoke|Machamp|Bellsprout|Weepinbell|Victreebel|Tentacool|Tentacruel|Geodude|Graveler|Golem|Ponyta|Rapidash|Slowpoke|Slowbro|Magnemite|Magneton|Farfetch'd|Doduo|Dodrio|Seel|Dewgong|Grimer|Muk|Shellder|Cloyster|Gastly|Haunter|Gengar|Onix|Drowzee|Hypno|Krabby|Kingler|Voltorb|Electrode|Exeggcute|Exeggutor|Cubone|Marowak|Hitmonlee|Hitmonchan|Lickitung|Koffing|Weezing|Rhyhorn|Rhydon|Chansey|Tangela|Kangaskhan|Horsea|Seadra|Goldeen|Seaking|Staryu|Starmie|Mr. Mime|Scyther|Jynx|Electabuzz|Magmar|Pinsir|Tauros|Magikarp|Gyarados|Lapras|Ditto|Eevee|Vaporeon|Jolteon|Flareon|Porygon|Omanyte|Omastar|Kabuto|Kabutops|Aerodactyl|Snorlax|Articuno|Zapdos|Moltres|Dratini|Dragonair|Dragonite|Mewtwo|Mew`.split('|');
+  if (NAMES.length !== 151) throw new Error('Pokédex names list does not contain 151 species.');
+  const $ = id => document.getElementById(id);
+  const refs = {
+    head: $('head-select'), body: $('body-select'), edition: $('edition'), palette: $('palette'),
+    size: $('head-size'), splice: $('splice'), smart: $('auto-seam'), canvas: $('fusion-canvas'),
+    headPreview: $('head-preview'), bodyPreview: $('body-preview'), loader: $('loader'),
+    error: $('error-msg'), status: $('status-text'), name: $('fusion-name'), details: $('fusion-details'),
+    recent: $('recent-grid'), download: $('download-btn')
+  };
+  const STORAGE_KEY = 'pokesplice.gen1.history.v1';
+  const cache = new Map();
+  let currentRender = 0;
+  let timer = 0;
+  let history = [];
+  let isReady = false;
+  const numeric = (v, fallback, lo, hi) => Number.isFinite(Number(v)) ? Math.max(lo, Math.min(hi, Number(v))) : fallback;
+  const pad = n => String(n).padStart(3, '0');
+  function urlFor(id, edition, fallback = false) {
+    const folder = `sprites/pokemon/versions/generation-i/${edition}/${id}.png`;
+    return fallback ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/${folder}`
+      : `https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/${folder}`;
+  }
+  function loadSprite(id, edition) {
+    const key = `${edition}:${id}`;
+    if (cache.has(key)) return cache.get(key);
+    const promise = new Promise((resolve, reject) => {
+      const image = new Image();
+      image.crossOrigin = 'anonymous';
+      let source = 0;
+      image.onload = () => resolve(image);
+      image.onerror = () => {
+        if (!source++) image.src = urlFor(id, edition, true);
+        else reject(new Error(`Could not load #${pad(id)} (${NAMES[id - 1]}). Check your connection or try a different sprite edition.`));
+      };
+      image.src = urlFor(id, edition);
+    });
+    cache.set(key, promise);
+    promise.catch(() => { if (cache.get(key) === promise) cache.delete(key); });
+    return promise;
+  }
+  function values() {
+    return {
+      head: Number(refs.head.value), body: Number(refs.body.value),
+      edition: refs.edition.value, palette: refs.palette.value,
+      headSize: Number(refs.size.value), splice: Number(refs.splice.value), smart: refs.smart.checked
+    };
+  }
+  function nameFor(a, b) {
+    const head = NAMES[a - 1].replace(/[^a-zA-Z]/g, '');
+    const body = NAMES[b - 1].replace(/[^a-zA-Z]/g, '');
+    if (a === b) return head;
+    const splitHead = Math.max(2, Math.min(head.length - 1, Math.ceil(head.length * .53)));
+    const splitBody = Math.max(1, Math.min(body.length - 1, Math.floor(body.length * .49)));
+    const prefix = head.slice(0, splitHead);
+    const suffix = body.slice(splitBody).toLowerCase();
+    return (prefix + suffix).replace(/([a-z])\1{2,}/gi, '$1$1');
+  }
+  function updateChrome(v) {
+    $('head-id').textContent = `#${pad(v.head)}`;
+    $('body-id').textContent = `#${pad(v.body)}`;
+    $('result-number').textContent = `NO. ${pad(v.head)} × ${pad(v.body)}`;
+    refs.name.textContent = nameFor(v.head, v.body);
+    refs.details.textContent = `${NAMES[v.head - 1]} head · ${NAMES[v.body - 1]} body`;
+    $('head-size-value').textContent = `${v.headSize}%`;
+    $('splice-value').textContent = `${v.splice}%`;
+    for (const [preview, id] of [[refs.headPreview, v.head], [refs.bodyPreview, v.body]]) {
+      preview.dataset.fallback = '0';
+      preview.onerror = () => {
+        if (preview.dataset.fallback !== '1') {
+          preview.dataset.fallback = '1';
+          preview.src = urlFor(id, v.edition, true);
+        }
+      };
+      preview.src = urlFor(id, v.edition);
+    }
+    refs.headPreview.alt = `${NAMES[v.head - 1]} original Generation I sprite`;
+    refs.bodyPreview.alt = `${NAMES[v.body - 1]} original Generation I sprite`;
+  }
+  function setStatus(message, error = false) {
+    refs.status.textContent = message;
+    refs.status.style.color = error ? '#ff9d91' : '';
+  }
+  function saveHistory(v) {
+    const key = JSON.stringify(v);
+    const png = refs.canvas.toDataURL('image/png');
+    history = [{ ...v, key, png }, ...history.filter(item => item.key !== key)].slice(0, 12);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); }
+    catch (_) { /* Private browsing / storage quota; current session still works. */ }
+    renderHistory();
+  }
+  function renderHistory() {
+    refs.recent.replaceChildren();
+    if (!history.length) {
+      const div = document.createElement('div');
+      div.className = 'recent-empty';
+      div.textContent = 'Your experiments will appear here.';
+      refs.recent.appendChild(div);
+      return;
+    }
+    for (const item of history) {
+      if (!(item.head >= 1 && item.head <= 151 && item.body >= 1 && item.body <= 151) || typeof item.png !== 'string') continue;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'recent-item';
+      button.title = `Restore ${NAMES[item.head - 1]} + ${NAMES[item.body - 1]}`;
+      const frame = document.createElement('div');
+      frame.className = 'recent-thumb';
+      const image = document.createElement('img');
+      image.src = item.png;
+      image.alt = '';
+      frame.appendChild(image);
+      const title = document.createElement('span');
+      title.textContent = nameFor(item.head, item.body);
+      button.append(frame, title);
+      button.addEventListener('click', () => { applyValues(item); scheduleRender(); window.scrollTo({top:0,behavior:'smooth'}); });
+      refs.recent.appendChild(button);
+    }
+  }
+  function applyValues(v) {
+    refs.head.value = String(numeric(v.head, 25, 1, 151));
+    refs.body.value = String(numeric(v.body, 1, 1, 151));
+    if (['red-blue', 'yellow', 'red-green-japan'].includes(v.edition)) refs.edition.value = v.edition;
+    if (['original', 'gameboy', 'blue', 'red', 'sepia'].includes(v.palette)) refs.palette.value = v.palette;
+    refs.size.value = String(numeric(v.headSize, 100, 65, 150));
+    refs.splice.value = String(numeric(v.splice, 46, 30, 64));
+    refs.smart.checked = v.smart !== false && v.smart !== 'false' && v.smart !== '0';
+  }
+  function scheduleRender() {
+    clearTimeout(timer);
+    const v = values();
+    updateChrome(v);
+    const token = ++currentRender;
+    refs.download.disabled = true;
+    refs.loader.hidden = false;
+    refs.error.hidden = true;
+    setStatus('Splicing specimens…');
+    timer = setTimeout(() => draw(v, token), 55);
+  }
+  async function draw(v, token) {
+    try {
+      const [head, body] = await Promise.all([loadSprite(v.head, v.edition), loadSprite(v.body, v.edition)]);
+      if (token !== currentRender) return;
+      window.FusionEngine.fuse(head, body, refs.canvas, v);
+      if (token !== currentRender) return;
+      isReady = true;
+      refs.download.disabled = false;
+      refs.loader.hidden = true;
+      setStatus('✓ Fusion complete · generated locally in your browser');
+      refs.error.hidden = true;
+      updateUrl(v);
+      saveHistory(v);
+    } catch (error) {
+      if (token !== currentRender) return;
+      isReady = false;
+      refs.loader.hidden = true;
+      refs.download.disabled = true;
+      refs.error.hidden = false;
+      refs.error.textContent = `Sprite loading failed: ${error.message}`;
+      setStatus('Unable to complete fusion', true);
+    }
+  }
+  function updateUrl(v) {
+    if (window.location.protocol === 'file:') return;
+    const params = new URLSearchParams();
+    params.set('head', String(v.head)); params.set('body', String(v.body));
+    if (v.edition !== 'red-blue') params.set('edition', v.edition);
+    if (v.palette !== 'original') params.set('palette', v.palette);
+    if (v.headSize !== 100) params.set('size', String(v.headSize));
+    if (v.splice !== 46) params.set('splice', String(v.splice));
+    if (!v.smart) params.set('smart', '0');
+    const url = `${location.pathname}?${params.toString()}${location.hash}`;
+    try { historyApiReplace(url); } catch (_) { /* Embedded browsers can restrict URL changes. */ }
+  }
+  function historyApiReplace(url) { window.history.replaceState(null, '', url); }
+  function exportPNG() {
+    if (!isReady || refs.download.disabled) return;
+    const big = document.createElement('canvas');
+    big.width = 768; big.height = 768;
+    const ctx = big.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(refs.canvas, 0, 0, 768, 768);
+    const link = document.createElement('a');
+    const v = values();
+    link.href = big.toDataURL('image/png');
+    link.download = `pokesplice-${pad(v.head)}-${pad(v.body)}.png`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setStatus('✓ Exported transparent 768 × 768 PNG');
+  }
+  function randomizedPair() {
+    const a = Math.floor(Math.random() * 151) + 1;
+    let b = Math.floor(Math.random() * 151) + 1;
+    if (b === a) b = (b % 151) + 1;
+    refs.head.value = String(a);
+    refs.body.value = String(b);
+    scheduleRender();
+  }
+  function populateNames() {
+    for (let i = 0; i < NAMES.length; i++) {
+      for (const select of [refs.head, refs.body]) {
+        const option = new Option(`#${pad(i + 1)} ${NAMES[i]}`, String(i + 1));
+        select.appendChild(option);
+      }
+    }
+  }
+  function restoreFromUrl() {
+    const query = new URLSearchParams(location.search);
+    applyValues({
+      head:query.get('head') ?? 25,body:query.get('body') ?? 1,
+      edition:query.get('edition') ?? 'red-blue',palette:query.get('palette') ?? 'original',
+      headSize:query.get('size') ?? 100,splice:query.get('splice') ?? 46,
+      smart:query.get('smart') !== '0'
+    });
+  }
+  async function copyShareLink() {
+    if (location.protocol === 'file:') {
+      setStatus('Host the folder online to get shareable fusion links.', true);
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(location.href);
+      setStatus('✓ Fusion link copied to clipboard');
+    } catch (_) {
+      const temp = document.createElement('textarea');
+      temp.value = location.href; document.body.appendChild(temp); temp.select();
+      const ok = document.execCommand('copy'); temp.remove();
+      setStatus(ok ? '✓ Fusion link copied' : 'Copy the URL from your address bar', !ok);
+    }
+  }
+  function initialize() {
+    populateNames();
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if (Array.isArray(stored)) history = stored.slice(0, 12);
+    } catch (_) { history = []; }
+    renderHistory();
+    restoreFromUrl();
+    for (const element of [refs.head, refs.body, refs.edition, refs.palette, refs.size, refs.splice, refs.smart]) {
+      element.addEventListener('input', scheduleRender);
+      if (element.tagName === 'SELECT') element.addEventListener('change', scheduleRender);
+    }
+    $('swap-btn').addEventListener('click', () => {
+      const a = refs.head.value; refs.head.value = refs.body.value; refs.body.value = a;
+      scheduleRender();
+    });
+    $('random-btn').addEventListener('click', randomizedPair);
+    $('reset-btn').addEventListener('click', () => {
+      refs.size.value = '100'; refs.splice.value = '46'; refs.smart.checked = true;
+      scheduleRender();
+    });
+    $('clear-history').addEventListener('click', () => {
+      history = [];
+      try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+      renderHistory();
+      setStatus('Recent fusion history cleared');
+    });
+    $('share-btn').addEventListener('click', copyShareLink);
+    refs.download.addEventListener('click', exportPNG);
+    window.addEventListener('popstate', () => {restoreFromUrl();scheduleRender();});
+    scheduleRender();
+  }
+  initialize();
+})();
+
+</script>
+</body>
+</html>
