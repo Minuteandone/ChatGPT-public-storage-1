@@ -1,42 +1,50 @@
-# POKÉ//SPLICE — Gen I Pokémon Fusion Lab
+# POKÉ//SPLICE v2 — Gen I Pokémon Fusion Lab 🧬
 
-A static, client-side browser app that automatically fuses Pokémon from the original 151 using authentic Generation I front sprites (Red/Blue, Yellow, or Japanese Red/Green). **No backend, no API key, no AI image generation, no pre-rendered fusion database.**
+An open, static browser app that procedurally fuses any two of the original **151 Pokémon** using actual Generation I front sprites. **No login, server, API key, machine-learning model, or pre-made fusion images.**
 
-## Run it
+## Launch
 
-Unzip the folder and open `index.html` in a modern browser with internet access. The app downloads **only the two Pokémon sprites you pick**, directly from the publicly available [PokéAPI sprites repository](https://github.com/PokeAPI/sprites), using jsDelivr with GitHub Raw fallback. The rest of the app works locally. You can also host these files on GitHub Pages or any basic static web host (no build or server configuration needed).
+Open **`pokesplice-standalone.html`** for a self-contained copy, or open **`index.html`** with the adjacent JS and CSS files. You'll need internet access to fetch the two original sprites via the [PokéAPI sprites GitHub repository](https://github.com/PokeAPI/sprites) (jsDelivr CDN, with raw GitHub fallback). After the images load, *all fusion generation happens inside your browser*.
 
-> The sprite files are fetched from the internet and are **not** bundled inside this ZIP. Canvas export needs CORS-enabled hosts; the app uses cross-origin anonymous images and the sprite CDN/raw host. If opening from `file://` on a browser with unusually strict restrictions, serve the files from a local HTTP server instead (`python -m http.server 8000` from this directory, then visit `http://localhost:8000`).
+This can be published as a static site on GitHub Pages, or run from a local server via `python -m http.server 8000`.
 
-## Features
+## What's new in v2
 
-- All **151** original Pokémon selectable separately for **head** and **body** — 151² = 22,801 ordered pairings (including self-fusions).
-- Native Canvas 2D sprite extraction, background cleanup, automatic body/head split, silhouette-aware seam position, and neck alignment.
-- Generation I Red/Blue, Yellow, and Japan Red/Green editions.
-- Color remapping to Game Boy green, blue, red, sepia, or original sprite colors.
-- Live head-size, splice-height, and automatic seam controls.
-- Random pair, swap, download a **transparent 768×768 PNG**, browser-only recent fusion gallery, and URL sharing on hosted deployments.
-- Responsive design for mobile, tablet, and desktop; all processing runs entirely within the browser.
+- **Three fusion algorithms:** `Contour` (default) computes a curved per-pixel neck boundary using silhouette centroids, `Graft` additionally retains exposed side parts of the body donor, and `Classic` keeps the v1 straight horizontal cut for comparison.
+- **Mutation Explorer:** four clickable variations appear automatically for every pair. They use the same two sprites without downloading anything else.
+- **Search by name or Pokédex number** for both parents, plus the full original 151-species dropdowns.
+- **Fine-tuning:** adjustable head size, splice height, horizontal head shift, neck overlap, and automatic seam detection. Supports difficult combinations without manually editing the pixel art.
+- **Favorites:** save up to 24 exact fusion recipes + thumbnails in browser storage, separate from the 12-item recent mutations list.
+- **Shareable URL settings** cover all v2 controls and can restore an exact pair and splice recipe on a static host.
+- Sprite variants from Red/Blue, Yellow, and Japanese Red/Green; optional Game Boy green, blue, red and sepia palettes.
+- Pixelated transparent 768×768 PNG export, responsive layouts for phone/tablet/desktop, and a single-file version.
 
-## How fusion works
+**Combinations:** 151 heads × 151 bodies = 22,801 directed pairings, each with more visual variants and tuning options.
 
-1. Decode each Pokémon sprite into the Canvas 2D API.
-2. Remove transparent or flood-filled white exterior background pixels, then compute sprite bounding boxes and row-by-row silhouette centroids.
-3. Find a likely neck or transition row near the chosen splice height, with an optional narrowest-usable-row heuristic.
-4. Preserve the **lower half** of the body donor and the **upper half** of the head donor, scale to a common 96×96 sprite stage, and align both by their local seam centroids.
-5. Optionally recolor using a four-ink palette; use nearest-neighbor rendering for sharp pixels.
+## Fusion engine
 
-This is a **procedural pixel-art compositor**, not a semantic segmentation neural network. Especially weird Pokémon (Ditto, Gastly, Voltorb, Onix, Magnemite, etc.) may have goofy cuts; that's why the adjustable head size and splice height controls exist.
+All generated art uses Canvas2D nearest-neighbor sampling to retain original sprite pixels. The engine removes only the sprite's exterior white background (via flood fill when needed), crops the sprite, collects per-row silhouette pixel counts and horizontal centers, and picks a narrower cut within the user's target range. In Contour/Graft mode it applies a tapered, nonstraight alpha mask separately to the head and body pieces, aligns their necks, and optionally keeps exterior side pixels from the body sprite. No anatomical labels or AI understanding of the character is inferred: species with strange outlines can still produce some *extremely cursed* combinations.
 
-## Files
+**Privacy:** Pokémon selections and favorites stay in the browser's localStorage. The project does not phone home with your fusion choices. The two Pokémon sprite images are requested from external public hosts and require internet access.
 
-- `index.html` — page markup and controls.
-- `pokesplice-standalone.html` — convenient all-in-one HTML file that contains the app’s CSS and JS.
-- `styles.css` — responsive lab / Pokédex-inspired visual design.
-- `engine.js` — self-contained browser Canvas fusion engine.
-- `app.js` — all 151 names, sprite fetching, interactions, history, link sharing, export.
-- `tests/test-browser.py` — optional browser smoke test with synthetic sprites; requires Python, Pillow, and Playwright/Chromium to execute.
+## Source files
 
-## Credits / rights
+- `index.html` — complete accessible interface and controls.
+- `styles.css` — responsive visual design.
+- `engine.js` — Canvas2D procedural silhouette and fusion engine.
+- `app.js` — Pokédex, image fetches, mutation explorer, save/history, sharing, PNG export.
+- `pokesplice-standalone.html` — all source combined into one HTML file, no build tools.
+- `tests/test-browser.py` — Playwright browser smoke test using synthetic fixture sprites (no external sprite network required).
+- `tests/preview.png` and `tests/mobile-preview.png` — browser verification screenshots.
 
-The application code was newly created for this project. Pokémon names, characters, and sprites belong to their respective owners. Sprites are fetched from the [PokéAPI sprites repository](https://github.com/PokeAPI/sprites). This is an unofficial fan project, not endorsed by Nintendo, Game Freak, The Pokémon Company, or PokéAPI.
+## Run tests
+
+Requires Python 3, Pillow, Playwright, and Chromium. From this folder:
+
+```sh
+python tests/test-browser.py
+```
+
+## Rights
+
+The application code is an unofficial fan project. Pokémon names and sprites belong to their respective owners, and the site is not affiliated with Nintendo, Game Freak, The Pokémon Company, or PokéAPI. Sprite assets are fetched live rather than redistributed in the ZIP.
