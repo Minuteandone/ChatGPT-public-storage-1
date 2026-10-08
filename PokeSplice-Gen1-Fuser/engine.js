@@ -124,55 +124,101 @@
     }
     context.putImageData(image, 0, 0);
   }
+  // Pixel-space masks produce a naturally uneven neck edge while retaining
+  // the original silhouette. No blur, resampling, or generative model is used.
+  function maskedSection(sprite, cut, part, mode, sideKeep = null) {
+    if (mode === 'classic') return sprite.canvas;
+    const copy = makeCanvas(sprite.width, sprite.height);
+    const ctx = copy.getContext('2d', {willReadFrequently:true});
+    ctx.drawImage(sprite.canvas, 0, 0);
+    const image = ctx.getImageData(0, 0, sprite.width, sprite.height);
+    for (let y = 0; y < sprite.height; y++) {
+      const center = sprite.rowCenters[y] || sprite.width / 2;
+      for (let x = 0; x < sprite.width; x++) {
+        const distance = clamp(Math.abs(x + .5 - center) / Math.max(5, sprite.width * .5), 0, 1);
+        // The middle of the cut is slightly lower than the edges, like a neck.
+        const offset = Math.round(3 - 5 * distance * distance);
+        const boundary = cut + offset;
+        let keep = part === 'head' ? y < boundary : y >= boundary;
+        if (!keep && part === 'body' && sideKeep && y >= cut - Math.round(sprite.height * .28)) {
+          const screenX = sideKeep.bodyX + (x + .5) * sideKeep.bodyScale;
+          keep = screenX < sideKeep.headX - 2 || screenX > sideKeep.headX + sideKeep.headW + 2;
+        }
+        if (!keep) image.data[(y * sprite.width + x) * 4 + 3] = 0;
+      }
+    }
+    ctx.putImageData(image, 0, 0);
+    return copy;
+  }
+  function neckInk(sprite, cut) {
+    const data = sprite.canvas.getContext('2d', {willReadFrequently:true}).getImageData(0, 0, sprite.width, sprite.height).data;
+    const x0 = Math.max(0, Math.floor(sprite.rowCenters[Math.max(0, cut - 1)] - 3));
+    const x1 = Math.min(sprite.width - 1, x0 + 6);
+    for (let y = Math.min(sprite.height - 1, cut); y >= Math.max(0, cut - 7); y--) {
+      for (let x = x0; x <= x1; x++) {
+        const i = (y * sprite.width + x) * 4;
+        if (data[i + 3] > 220) return `rgb(${data[i]},${data[i + 1]},${data[i + 2]})`;
+      }
+    }
+    return '#5a5a5a';
+  }
   function fuse(headImage, bodyImage, output, options = {}) {
     if (!output || typeof output.getContext !== 'function') throw new Error('Missing result canvas.');
     const head = extract(headImage), body = extract(bodyImage);
     const fraction = clamp(Number(options.splice ?? 46) / 100, .3, .64);
     const requestedHeadSize = clamp(Number(options.headSize ?? 100) / 100, .65, 1.5);
     const smart = options.smart !== false;
+    const mode = ['classic', 'contour', 'graft'].includes(options.mode) ? options.mode : 'contour';
     const headCut = seamAt(head, fraction + .04, smart);
     const bodyCut = seamAt(body, fraction - .07, smart);
-    const context = output.getContext('2d', { willReadFrequently: true });
+    const context = output.getContext('2d', {willReadFrequently:true});
     output.width = SIZE; output.height = SIZE;
-    context.clearRect(0, 0, SIZE, SIZE);
     context.imageSmoothingEnabled = false;
+    context.clearRect(0, 0, SIZE, SIZE);
 
     const bodyScale = Math.min(1.48, 67 / body.width, 69 / body.height);
     const bodyX = Math.round((SIZE - body.width * bodyScale) / 2);
     const bodyY = Math.round(84 - body.height * bodyScale);
     const bodyJointY = Math.round(bodyY + bodyCut * bodyScale);
     const bodyJointX = bodyX + jointCenter(body, bodyCut, bodyCut + 4) * bodyScale;
-    const bodyLowerHeight = body.height - bodyCut;
-    if (bodyLowerHeight > 0) context.drawImage(body.canvas,
-      0, bodyCut, body.width, bodyLowerHeight,
-      bodyX, bodyJointY, Math.round(body.width * bodyScale), Math.round(bodyLowerHeight * bodyScale));
 
-    // Scale the upper region relative to the body, then align the head's lower
-    // silhouette centroid to the body's upper silhouette centroid.
     const fitWidth = Math.min(1.55, 47 / head.width, (body.width * bodyScale * 1.02) / head.width);
     const fitHeight = Math.min(1.6, 43 / Math.max(headCut, 1));
     const headScale = Math.min(fitWidth, fitHeight) * requestedHeadSize;
     const headW = Math.max(1, Math.round(head.width * headScale));
-    const headH = Math.max(1, Math.round(headCut * headScale));
+    const headH = Math.max(1, Math.round(head.height * headScale));
     const headJoint = jointCenter(head, headCut - 5, headCut - 1);
-    let headX = Math.round(bodyJointX - headJoint * headScale);
-    let headY = Math.round(bodyJointY - headH + Math.max(2, Math.round(3 * bodyScale)));
+    const overlap = clamp(Number(options.overlap ?? 3), 0, 12);
+    const shiftX = clamp(Number(options.shiftX ?? 0), -18, 18);
+    const shiftY = clamp(Number(options.shiftY ?? 0), -12, 12);
+    let headX = Math.round(bodyJointX - headJoint * headScale + shiftX);
+    let headY = Math.round(bodyJointY - headCut * headScale + overlap + shiftY);
     headX = clamp(headX, 2, Math.max(2, SIZE - 2 - headW));
-    headY = clamp(headY, 2, Math.max(2, SIZE - 5 - headH));
+    headY = clamp(headY, 2, Math.max(2, SIZE - 4 - headH * .38));
 
-    // Very short pixel connector behind head for disconnected anatomy.
-    // Most sprites already overlap, but this helps narrow/thin necks.
-    const jointGap = bodyJointY - (headY + headH);
+    if (mode === 'classic') {
+      const bodyLowerHeight = body.height - bodyCut;
+      if (bodyLowerHeight > 0) context.drawImage(body.canvas, 0, bodyCut, body.width, bodyLowerHeight,
+        bodyX, bodyJointY, Math.round(body.width * bodyScale), Math.round(bodyLowerHeight * bodyScale));
+    } else {
+      context.drawImage(maskedSection(body, bodyCut, 'body', mode,
+        mode === 'graft' ? {bodyX, bodyScale, headX, headW} : null),
+        bodyX, bodyY, Math.round(body.width * bodyScale), Math.round(body.height * bodyScale));
+    }
+    const jointGap = bodyJointY - (headY + headCut * headScale);
     if (jointGap > 0 && jointGap < 9) {
       const center = Math.round((bodyJointX + headX + headJoint * headScale) / 2);
-      context.fillStyle = '#353d42';
-      context.fillRect(center - 3, headY + headH - 1, 6, jointGap + 3);
-      context.fillStyle = '#9fa397';
-      context.fillRect(center - 2, headY + headH, 4, jointGap + 2);
+      context.fillStyle = neckInk(body, bodyCut);
+      context.fillRect(center - 3, Math.round(headY + headCut * headScale) - 1, 6, Math.ceil(jointGap) + 3);
     }
-    context.drawImage(head.canvas, 0, 0, head.width, headCut, headX, headY, headW, headH);
+    if (mode === 'classic') {
+      context.drawImage(head.canvas, 0, 0, head.width, headCut,
+        headX, headY, headW, Math.max(1, Math.round(headCut * headScale)));
+    } else {
+      context.drawImage(maskedSection(head, headCut, 'head', mode), headX, headY, headW, headH);
+    }
     recolor(output, options.palette || 'original');
-    return { headCut, bodyCut, pixels: SIZE, headScale, bodyScale };
+    return {headCut, bodyCut, pixels:SIZE, headScale, bodyScale, mode};
   }
-  global.FusionEngine = Object.freeze({ fuse, extract, seamAt, PALETTES, SIZE });
+  global.FusionEngine = Object.freeze({fuse, extract, seamAt, PALETTES, SIZE});
 })(window);
