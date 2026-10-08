@@ -18,15 +18,15 @@
         <div class="brand-ball" aria-hidden="true"><span></span></div>
         <div class="brand-name">POKÉ<span class="slash">//</span>SPLICE <small>LAB 001</small></div>
       </div>
-      <div class="header-caption"><span class="status-dot"></span> GEN I SPRITE EXPERIMENT <span class="header-version">/ v1.0</span></div>
+      <div class="header-caption"><span class="status-dot"></span> GEN I SPRITE EXPERIMENT <span class="header-version">/ v2.0</span></div>
     </header>
 
     <main>
       <div class="intro">
         <div>
-          <p class="eyebrow">THE ORIGINAL 151 · ∞ COMBINATIONS</p>
+          <p class="eyebrow">THE ORIGINAL 151 · 22,801 PAIRINGS · PROCEDURAL FUSIONS</p>
           <h1>Make something<br><em>that shouldn't exist.</em></h1>
-          <p class="subtitle">Two classic sprites. One questionable scientific achievement. Automatic pixel-art fusion, entirely in your browser.</p>
+          <p class="subtitle">Two classic sprites. One questionable scientific achievement. Improved silhouette-aware fusion, multiple mutations per pair, and an entirely browser-based lab.</p>
         </div>
         <div class="intro-stamp" aria-hidden="true"><span>151 × 151</span><strong>22,801</strong><small>PAIRINGS</small></div>
       </div>
@@ -37,14 +37,15 @@
           <div class="specimen-cards">
             <div class="specimen-card">
               <div class="specimen-top"><span class="tiny-label">A / HEAD DONOR</span><span class="specimen-id" id="head-id">#025</span></div>
-              <div class="specimen-main"><div class="sprite-frame"><img id="head-preview" alt="Head donor sprite"></div><div class="specimen-select"><label for="head-select">HEAD FROM</label><select id="head-select"></select><span class="select-hint">Face and upper features</span></div></div>
+              <div class="specimen-main"><div class="sprite-frame"><img id="head-preview" alt="Head donor sprite"></div><div class="specimen-select"><label for="head-select">HEAD FROM</label><input class="species-search" id="head-search" type="search" list="pokemon-list" placeholder="🔎 Find by name or number…" autocomplete="off"><select id="head-select"></select><span class="select-hint">Face and upper features</span></div></div>
             </div>
             <div class="fusion-link" aria-hidden="true"><div class="link-line"></div><span>+</span><div class="link-line"></div></div>
             <div class="specimen-card">
               <div class="specimen-top"><span class="tiny-label">B / BODY DONOR</span><span class="specimen-id" id="body-id">#001</span></div>
-              <div class="specimen-main"><div class="sprite-frame"><img id="body-preview" alt="Body donor sprite"></div><div class="specimen-select"><label for="body-select">BODY FROM</label><select id="body-select"></select><span class="select-hint">Torso and lower features</span></div></div>
+              <div class="specimen-main"><div class="sprite-frame"><img id="body-preview" alt="Body donor sprite"></div><div class="specimen-select"><label for="body-select">BODY FROM</label><input class="species-search" id="body-search" type="search" list="pokemon-list" placeholder="🔎 Find by name or number…" autocomplete="off"><select id="body-select"></select><span class="select-hint">Torso and lower features</span></div></div>
             </div>
           </div>
+          <datalist id="pokemon-list"></datalist>
           <div class="action-row">
             <button class="button button-outline" id="swap-btn" type="button"><span aria-hidden="true">⇄</span> SWAP</button>
             <button class="button button-primary" id="random-btn" type="button"><span aria-hidden="true">✦</span> RANDOM FUSION</button>
@@ -58,6 +59,15 @@
               <option value="yellow">Yellow · 1998</option>
               <option value="red-green-japan">Red / Green · Japan 1996</option>
             </select>
+          </div>
+          <div class="control-group">
+            <label for="mode">FUSION METHOD <span class="hint-chip">NEW</span></label>
+            <select id="mode" class="large-select">
+              <option value="contour">Contour splice · organic seam</option>
+              <option value="graft">Graft · keep extra body features</option>
+              <option value="classic">Classic · straight splice</option>
+            </select>
+            <p class="control-description" id="mode-description">Follows the sprite silhouette for a less abrupt connection.</p>
           </div>
           <div class="control-group">
             <label for="palette">COLOR TREATMENT</label>
@@ -79,6 +89,16 @@
             <input type="range" id="splice" min="30" max="64" step="2" value="46">
             <div class="range-notes"><span>MORE HEAD</span><span>MORE BODY</span></div>
           </div>
+          <div class="slider-group">
+            <div class="range-heading"><label for="shift-x">HEAD POSITION</label><output id="shift-x-value" for="shift-x">CENTERED</output></div>
+            <input type="range" id="shift-x" min="-18" max="18" step="1" value="0">
+            <div class="range-notes"><span>LEFT</span><span>RIGHT</span></div>
+          </div>
+          <div class="slider-group">
+            <div class="range-heading"><label for="overlap">NECK OVERLAP</label><output id="overlap-value" for="overlap">3 PX</output></div>
+            <input type="range" id="overlap" min="0" max="12" step="1" value="3">
+            <div class="range-notes"><span>LESS OVERLAP</span><span>MORE OVERLAP</span></div>
+          </div>
           <div class="toggle-group"><label class="toggle-label" for="auto-seam">SMART SEAM DETECTION <small>Automatically find a narrower place to join</small></label><input type="checkbox" id="auto-seam" checked></div>
           <button class="reset-link" id="reset-btn" type="button">↺ Reset adjustments</button>
         </section>
@@ -98,10 +118,15 @@
           <p class="error-message" id="error-msg" role="alert" hidden></p>
           <div class="result-actions">
             <button class="button button-primary" id="download-btn" type="button" disabled>↓ DOWNLOAD PNG</button>
+            <button class="button button-outline" id="favorite-btn" type="button" aria-pressed="false" disabled>☆ SAVE</button>
             <button class="button button-outline" id="share-btn" type="button">↗ COPY LINK</button>
           </div>
           <p id="status-text" class="status-text" role="status" aria-live="polite">Loading your first fusion…</p>
-          <div class="result-notes"><span class="star">✳</span><p>Each fusion is cut and assembled from real Gen I pixel sprites—no pre-made combinations, no AI image generator, no server-side processing. Strange anatomy is a feature, probably.</p></div>
+          <div class="variants-section">
+            <div class="variant-header"><h3>✦ MUTATION EXPLORER</h3><span>FOUR WAYS TO SPLICE THE SAME PAIR</span></div>
+            <div id="variant-grid" class="variant-grid" aria-label="Generated fusion variants"></div>
+          </div>
+          <div class="result-notes"><span class="star">✳</span><p>Every fusion is assembled from real Gen I sprite pixels. Contour mode follows the neck silhouette; graft mode retains some side features. No AI image generation or server processing.</p></div>
         </section>
       </div>
 
@@ -109,6 +134,10 @@
         <div class="panel-head"><span class="panel-num">04</span><h2>RECENT MUTATIONS</h2><span class="panel-extra">SAVED LOCALLY</span></div>
         <div id="recent-grid" class="recent-grid"><div class="recent-empty">Your experiments will appear here.</div></div>
         <button type="button" class="reset-link history-clear" id="clear-history">Clear history</button>
+      </section>
+      <section class="recent-section favorites-section" aria-label="Favorite fusions">
+        <div class="panel-head"><span class="panel-num">05</span><h2>YOUR FAVORITES</h2><span class="panel-extra">STORED IN THIS BROWSER</span></div>
+        <div id="favorites-grid" class="recent-grid"><div class="recent-empty">Tap ☆ SAVE on a fusion you want to keep.</div></div>
       </section>
     </main>
     <footer class="footer"><span>A FAN-MADE PIXEL EXPERIMENT. NOT AFFILIATED WITH NINTENDO, GAME FREAK, OR THE POKÉMON COMPANY.</span><span>SPRITE SOURCE: <a href="https://github.com/PokeAPI/sprites" target="_blank" rel="noopener noreferrer">POKÉAPI / SPRITES ↗</a></span></footer>
