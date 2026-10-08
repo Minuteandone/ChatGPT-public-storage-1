@@ -1,0 +1,23 @@
+# Local OS/editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Regenerable environment/cache files
+__pycache__/
+.pytest_cache/
+.venv/
+node_modules/
+
+# Common secret file patterns — not a substitute for reviewing uploads!
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Disposable temporary files
+*.tmp
