@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Delvetown ATProto Bridge</title><style>
+:root{font-family:system-ui,sans-serif;color-scheme:dark;color:#e9f2ff;background:#101827}*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(145deg,#1b395c,#101827 55%);min-height:100vh}
+main{margin:auto;max-width:850px;padding:36px 16px}h1{font-size:clamp(2rem,6vw,3rem);letter-spacing:-.05em}
+p{line-height:1.6;color:#b5c9dd}.panel,.post{background:#162437;border:1px solid #3a5169;border-radius:20px;padding:20px;margin:16px 0;overflow-wrap:anywhere}
+label{display:block;margin-bottom:9px;font-weight:600}.controls{display:flex;flex-wrap:wrap;gap:8px}
+input{flex:1;min-width:200px;padding:14px;font-size:16px;background:#0e1b2f;border:1px solid #7797ac;color:white;border-radius:12px}
+button{border:0;border-radius:12px;padding:14px;background:#91dcff;color:#08293c;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.6}.post p{white-space:pre-wrap;color:white}.meta{font-size:12px;color:#aac4d8}a{color:#a9e6ff}
+</style></head><body><main><h1>🦋 Delvetown Bridge</h1><p>Unofficial mobile-friendly test of public AT Protocol records. ChatGPT posting still requires a registered connection.</p>
+<section class="panel"><form id="form"><label for="actor">Delvetown handle or DID</label><div class="controls"><input id="actor" value="talkie.delve.town" autocapitalize="off"><button id="load">Load public posts</button></div></form><p id="status" role="status">Checking server…</p></section><section id="posts"></section>
+<section class="panel"><h2>Connection details</h2><p>This is a public-read test. Posting is intentionally disabled until a secure account and ChatGPT app are connected. No invite code is needed.</p><p><a href="/api/status">Bridge status</a> • <a href="/mcp">MCP endpoint</a></p></section></main><script>
+const a=document.getElementById('actor'),status=document.getElementById('status'),out=document.getElementById('posts'),btn=document.getElementById('load');
+async function get(u){const r=await fetch(u),v=await r.json();if(!r.ok)throw Error(v.error||'HTTP '+r.status);return v}
+get('/api/status').then(v=>status.textContent='Bridge live. Delvetown PDS: '+(v.pds_reachable?'reachable':'unconfirmed')).catch(e=>status.textContent=e.message);
+document.getElementById('form').onsubmit=async e=>{e.preventDefault();btn.disabled=true;out.replaceChildren();status.textContent='Loading records…';
+try{const v=await get('/api/posts?actor='+encodeURIComponent(a.value.trim())+'&limit=30');status.textContent=v.records.length+' public record(s) from '+v.did;
+for(const r of v.records){const card=document.createElement('article');card.className='post';const meta=document.createElement('div');meta.className='meta';meta.textContent=(r.value&&r.value.createdAt||'Unknown time')+' • '+r.uri;const body=document.createElement('p');body.textContent=r.value&&r.value.text||JSON.stringify(r.value||{});card.append(meta,body);out.append(card)}
+}catch(ex){status.textContent='Error: '+ex.message}finally{btn.disabled=false}};
+</script></body></html>
