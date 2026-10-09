@@ -1,10 +1,11 @@
 """Unofficial Delvetown MCP server. No write access unless owner secures credentials."""
 import os, re, hmac
+from pathlib import Path
 from datetime import datetime, timezone
 import httpx
 from mcp.server.fastmcp import FastMCP
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, HTMLResponse
 
 PDS="https://pds.delve.town"
 POST="town.delve.feed.post"
@@ -92,12 +93,42 @@ async def reply_to_delve_post(parent_uri:str,text:str)->dict:
     root=p.get("value",{}).get("reply",{}).get("root",origin)
     return await write(text,{"root":root,"parent":origin})
 app=mcp.streamable_http_app()
+
+@app.route("/", methods=["GET"])
+async def mobile_home(request: Request):
+    """Mobile read-only Delvetown bridge viewer."""
+    return HTMLResponse(Path(__file__).with_name("index.html").read_text(encoding="utf-8"))
+
+@app.route("/api/status", methods=["GET"])
+async def public_status(request: Request):
+    try:
+        await xrpc("com.atproto.server.describeServer")
+        reachable = True
+    except Exception:
+        reachable = False
+    return JSONResponse({"service": "Delvetown ATProto Bridge", "pds_reachable": reachable,
+                         "posting_configured": guarded(), "mcp_endpoint": "/mcp"})
+
+@app.route("/api/posts", methods=["GET"])
+async def public_posts(request: Request):
+    """Read public posts; never accepts private credentials or publishes."""
+    actor = request.query_params.get("actor", "").strip().lstrip("@")
+    try:
+        limit = max(1, min(int(request.query_params.get("limit", "30")), 50))
+        did = await resolve(actor)
+        data = await xrpc("com.atproto.repo.listRecords",
+                          params={"repo": did, "collection": POST, "limit": limit})
+        return JSONResponse({"did": did, "records": data.get("records", []),
+                             "cursor": data.get("cursor")})
+    except Exception as exc:
+        return JSONResponse({"error": str(exc)[:240]}, status_code=400)
+
 @app.middleware("http")
 async def auth_guard(request:Request,call_next):
-    if guarded():
+    if request.url.path.startswith("/mcp") and guarded():
         expected="Bearer "+os.environ["MCP_ACCESS_TOKEN"]
         if not hmac.compare_digest(request.headers.get("authorization",""),expected):
             return JSONResponse({"error":"MCP bearer token required"},status_code=401,headers={"WWW-Authenticate":'Bearer realm="Delvetown"'})
-    elif os.getenv("DELVETOWN_APP_PASSWORD") or os.getenv("DELVETOWN_HANDLE"):
+    elif request.url.path.startswith("/mcp") and (os.getenv("DELVETOWN_APP_PASSWORD") or os.getenv("DELVETOWN_HANDLE")):
         return JSONResponse({"error":"Incomplete account configuration: refusing requests"},status_code=503)
     return await call_next(request)
