@@ -92,12 +92,91 @@ async def reply_to_delve_post(parent_uri:str,text:str)->dict:
     origin={"uri":parent_uri,"cid":p["cid"]}
     root=p.get("value",{}).get("reply",{}).get("root",origin)
     return await write(text,{"root":root,"parent":origin})
+
+def _attempt_initial_registration():
+    """One-time opt-in ATProto account enrollment, credentials only from Render env.
+    Deliberately never writes passwords, invite codes or JWTs to source/logs.
+    """
+    if os.environ.get("DELVETOWN_SIGNUP_ON_STARTUP") != "YES":
+        return
+    required = ["DELVETOWN_SIGNUP_HANDLE","DELVETOWN_SIGNUP_EMAIL",
+                "DELVETOWN_SIGNUP_PASSWORD","DELVETOWN_SIGNUP_INVITE"]
+    handle = os.environ.get("DELVETOWN_SIGNUP_HANDLE", "")
+    status = {"status": "blocked", "handle": handle}
+    try:
+        if any(not os.environ.get(key) for key in required):
+            status["reason"] = "Missing signup environment settings"
+            return
+        if not re.fullmatch(r"[a-z0-9][a-z0-9-]{1,58}\.delve\.town", handle):
+            status["reason"] = "Invalid account handle"
+            return
+        base = "https://pds.delve.town/xrpc/"
+        with httpx.Client(timeout=25.0, follow_redirects=False) as client:
+            check = client.get(base+"com.atproto.identity.resolveHandle",params={"handle":handle})
+            if check.status_code == 200:
+                status = {"status": "handle_exists", "handle": handle,
+                          "did": check.json().get("did", "")}
+                return
+            if check.status_code not in (400, 404):
+                status["reason"] = "Handle availability check failed (HTTP "+str(check.status_code)+")"
+                return
+            try:
+                not_found = check.json().get("error", "")
+            except ValueError:
+                not_found = ""
+            if not_found not in ("HandleNotFound","InvalidHandle","NotFound"):
+                status["reason"] = "Availability uncertain: "+str(not_found)[:60]
+                return
+            payload = {"handle": handle,
+                       "email": os.environ["DELVETOWN_SIGNUP_EMAIL"],
+                       "password": os.environ["DELVETOWN_SIGNUP_PASSWORD"],
+                       "inviteCode": os.environ["DELVETOWN_SIGNUP_INVITE"]}
+            result = client.post(base+"com.atproto.server.createAccount",json=payload)
+            if result.status_code not in (200, 201):
+                try:
+                    code = result.json().get("error","Unspecified")
+                except ValueError:
+                    code = "Unspecified"
+                status["reason"] = "Registration HTTP "+str(result.status_code)
+                status["error_code"] = str(code)[:65]
+                return
+            data = result.json()
+            if not data.get("did") or data.get("handle") != handle:
+                status["reason"] = "Registration response uncertain; inspect account before retry"
+                return
+            status = {"status":"created","handle":data["handle"],"did":data["did"]}
+    except Exception as exc:
+        status["reason"] = "Registration exception "+type(exc).__name__
+    finally:
+        try:
+            Path("/tmp/delvetown_signup_status.json").write_text(
+                json.dumps(status),encoding="utf-8")
+        except Exception:
+            pass
+        print("DELVETOWN_REGISTRATION_STATUS="+status["status"],
+              "handle="+handle,flush=True)
+
+_attempt_initial_registration()
+
 app=mcp.streamable_http_app()
 
 @app.route("/", methods=["GET"])
 async def mobile_home(request: Request):
     """Mobile read-only Delvetown bridge viewer."""
     return HTMLResponse(Path(__file__).with_name("index.html").read_text(encoding="utf-8"))
+
+
+@app.route("/api/registration-status", methods=["GET"])
+async def registration_status(request: Request):
+    """Expose ONLY non-secret registration state; credentials never leave server."""
+    path = Path("/tmp/delvetown_signup_status.json")
+    if not path.exists():
+        return JSONResponse({"status": "not_attempted"})
+    try:
+        data=json.loads(path.read_text(encoding="utf-8"))
+        return JSONResponse({key: data[key] for key in ("status","handle","did","reason","error_code") if key in data})
+    except Exception:
+        return JSONResponse({"status":"unknown"})
 
 @app.route("/api/status", methods=["GET"])
 async def public_status(request: Request):
