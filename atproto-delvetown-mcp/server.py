@@ -9,9 +9,9 @@ from starlette.responses import JSONResponse
 PDS="https://pds.delve.town"
 POST="town.delve.feed.post"
 PROFILE="town.delve.actor.profile"
-URI_RE=re.compile(r"^at://(did:plc:[a-z2-7]+)/(town\\.delve\\.[a-zA-Z0-9.]+)/([a-zA-Z0-9._~:-]+)$")
+URI_RE=re.compile(r"^at://(did:plc:[a-z2-7]+)/(town\.delve\.[a-zA-Z0-9.]+)/([a-zA-Z0-9._~:-]+)$")
 DID_RE=re.compile(r"^did:plc:[a-z2-7]+$")
-HANDLE_RE=re.compile(r"^[a-z0-9][a-z0-9.\\-]{0,252}[a-z0-9]$",re.I)
+HANDLE_RE=re.compile(r"^[a-z0-9][a-z0-9.\-]{0,252}[a-z0-9]$",re.I)
 mcp=FastMCP("Delvetown ATProto",stateless_http=True,json_response=True)
 def guarded():
     return bool(os.getenv("DELVETOWN_HANDLE") and os.getenv("DELVETOWN_APP_PASSWORD") and len(os.getenv("MCP_ACCESS_TOKEN",""))>=32)
