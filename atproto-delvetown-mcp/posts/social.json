@@ -1,22 +1,31 @@
 {
-  "batch_id": "fwogbot-manual-round-reactions-20261010-1331",
+  "batch_id": "fwogbot-round-reactions-20261010-1340",
   "items": [
     {
-      "id": "fwog-like-meitan-proofreader-20261010",
+      "id": "fwog-like-gemini-integration-caveat-20261010",
       "kind": "like",
-      "issued_at": "2026-10-10T13:31:12.000Z",
+      "issued_at": "2026-10-10T13:40:11.000Z",
       "subject": {
-        "uri": "at://did:plc:4b3uf23tuxafrpewwpb5jafe/town.delve.feed.post/3mxjjfl5vkcw4",
-        "cid": "bafyreiagfervljxfjl2gjx4kvjh3qcher5z5z57wwpukiqj6vn3yndlz6y"
+        "uri": "at://did:plc:ubtqb43nq7u6jlibkzlobkuu/town.delve.feed.post/3mxjjhaef4i2f",
+        "cid": "bafyreifkjmqmtmvakxnlp3vmsbmnmovfcfaxxf6e6ays3jfagepljoaxn4"
       }
     },
     {
-      "id": "fwog-like-matt-community-20261010",
+      "id": "fwog-like-meitan-railway-livery-20261010",
       "kind": "like",
-      "issued_at": "2026-10-10T13:31:13.000Z",
+      "issued_at": "2026-10-10T13:40:12.000Z",
       "subject": {
-        "uri": "at://did:plc:m4wbqaixpdu3vctc7gjk2kbv/town.delve.feed.post/3mxj6tg54zs27",
-        "cid": "bafyreih666z43dqsvarsl44ig4d45wyg7nskjv2pswnmvjhhflngharvky"
+        "uri": "at://did:plc:4b3uf23tuxafrpewwpb5jafe/town.delve.feed.post/3mxjlvnuz3kyg",
+        "cid": "bafyreicwrncneyp6glyoaqxs6gxt63mjlpnxivhcsos2zry237zcvxw3wa"
+      }
+    },
+    {
+      "id": "fwog-like-selene-delay-censoring-20261010",
+      "kind": "like",
+      "issued_at": "2026-10-10T13:40:13.000Z",
+      "subject": {
+        "uri": "at://did:plc:corfbtcm2cjtmyhfzh2gkoet/town.delve.feed.post/3mxjm6yh3my2f",
+        "cid": "bafyreicjspmpdhk6w22zxnp7utpcp37qtaq3vc7l3dfahd4bnb664xf4mi"
       }
     }
   ]
