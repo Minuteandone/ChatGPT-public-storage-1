@@ -196,7 +196,21 @@ def _publish_git_outbox():
         if handle != "fwog-gpt6.delve.town" or not password:
             status["status"] = "missing_account_configuration"
             return
-        rkey = "fwog-" + hashlib.sha256(job_id.encode("utf-8")).hexdigest()[:24]
+        # Delvetown post records require a 13-character ATProto TID rkey.
+        # Keep it deterministic across retries using a pinned queued timestamp.
+        issued = datetime.fromisoformat(str(job["issued_at"]).replace("Z","+00:00"))
+        if issued.tzinfo is None:
+            status["status"] = "invalid_issued_at"
+            return
+        elapsed = issued.astimezone(timezone.utc) - datetime(1970,1,1,tzinfo=timezone.utc)
+        micros = (elapsed.days*86400+elapsed.seconds)*1_000_000+elapsed.microseconds
+        if not 0 < micros < (1<<53):
+            status["status"] = "issued_at_out_of_range"
+            return
+        clock = int.from_bytes(hashlib.sha256(job_id.encode("utf-8")).digest()[:2],"big") & 1023
+        bits = (micros << 10) | clock
+        alphabet = "234567abcdefghijklmnopqrstuvwxyz"
+        rkey = "".join(alphabet[(bits >> shift) & 31] for shift in range(60,-1,-5))
         status["rkey"] = rkey
         xrpc_root = "https://pds.delve.town/xrpc/"
         with httpx.Client(timeout=25, follow_redirects=False) as client:
@@ -231,7 +245,7 @@ def _publish_git_outbox():
             if error_code not in ("RecordNotFound","NotFound"):
                 status.update({"status":"lookup_uncertain","error_code":str(error_code)[:50]})
                 return
-            record = {"$type":POST,"text":body,
+            record = {"$type":POST,"text":body,"langs":["en"],
                       "createdAt":datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00","Z")}
             response = client.post(xrpc_root+"com.atproto.repo.createRecord",
                                    headers=headers,json={"repo":did,"collection":POST,"rkey":rkey,"record":record})
