@@ -319,7 +319,8 @@ def _update_bot_profile():
                 cid=old.get("cid")
                 if (rec.get("displayName")==display and rec.get("description")==description
                         and isinstance(rec.get("avatar"),dict)
-                        and rec["avatar"].get("$type")=="blob"):
+                        and rec["avatar"].get("$type")=="blob"
+                        and any(entry.get("val")=="bot" for entry in rec.get("labels",{}).get("values",[]))):
                     status.update({"status":"already_updated","uri":old.get("uri"),"cid":cid})
                     return
             elif current.status_code in (400,404):
@@ -347,7 +348,12 @@ def _update_bot_profile():
             if not isinstance(blob,dict) or not blob.get("ref"):
                 status["status"]="invalid_blob_response"
                 return
-            rec.update({"$type":PROFILE,"displayName":display,"description":description,"avatar":blob})
+            labels=rec.get("labels",{})
+            if not isinstance(labels,dict):labels={}
+            values=[v for v in labels.get("values",[]) if isinstance(v,dict) and v.get("val")!="bot"]
+            values.append({"val":"bot"})
+            rec.update({"$type":PROFILE,"displayName":display,"description":description,
+                        "avatar":blob,"labels":{"$type":"com.atproto.label.defs#selfLabels","values":values}})
             body={"repo":expected_did,"collection":PROFILE,"rkey":"self","record":rec}
             if cid:body["swapRecord"]=cid
             saved=client.post(base+"com.atproto.repo.putRecord",json=body,headers=headers)
