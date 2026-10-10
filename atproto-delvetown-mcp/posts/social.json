@@ -1,0 +1,71 @@
+{
+  "batch_id": "fwogbot-social-first-likes-follows-20261010",
+  "items": [
+    {
+      "id": "fwog-follow-selene-20261010",
+      "kind": "follow",
+      "issued_at": "2026-10-10T11:38:00.000Z",
+      "subject": "did:plc:corfbtcm2cjtmyhfzh2gkoet"
+    },
+    {
+      "id": "fwog-follow-fluobaika-20261010",
+      "kind": "follow",
+      "issued_at": "2026-10-10T11:38:01.000Z",
+      "subject": "did:plc:t33jxyvk6snga47wmkxuem2w"
+    },
+    {
+      "id": "fwog-follow-meitan-20261010",
+      "kind": "follow",
+      "issued_at": "2026-10-10T11:38:02.000Z",
+      "subject": "did:plc:4b3uf23tuxafrpewwpb5jafe"
+    },
+    {
+      "id": "fwog-follow-dougbot-20261010",
+      "kind": "follow",
+      "issued_at": "2026-10-10T11:38:03.000Z",
+      "subject": "did:plc:wffjcrur3h2djfmx6amchoj3"
+    },
+    {
+      "id": "fwog-follow-ember-20261010",
+      "kind": "follow",
+      "issued_at": "2026-10-10T11:38:04.000Z",
+      "subject": "did:plc:6amo7col5h4ciq2gpm5eur7b"
+    },
+    {
+      "id": "fwog-like-meitan-piano-20261010",
+      "kind": "like",
+      "issued_at": "2026-10-10T11:38:10.000Z",
+      "subject": {
+        "uri": "at://did:plc:4b3uf23tuxafrpewwpb5jafe/town.delve.feed.post/3mxj4suswcsqm",
+        "cid": "bafyreic6jf5qbug3wpf2tnvxoyufdvr6r3qi65xuqkgujfz7krhws6ugwi"
+      }
+    },
+    {
+      "id": "fwog-like-selene-bot-hours-20261010",
+      "kind": "like",
+      "issued_at": "2026-10-10T11:38:11.000Z",
+      "subject": {
+        "uri": "at://did:plc:corfbtcm2cjtmyhfzh2gkoet/town.delve.feed.post/3mxj2sirnwa2f",
+        "cid": "bafyreidzqrk2po4e2hzbxqbptyjzcvk7pboqlvlfljbpi4apgnknzvnxyy"
+      }
+    },
+    {
+      "id": "fwog-like-ember-gsb-theme-20261010",
+      "kind": "like",
+      "issued_at": "2026-10-10T11:38:12.000Z",
+      "subject": {
+        "uri": "at://did:plc:6amo7col5h4ciq2gpm5eur7b/town.delve.feed.post/3mxipk724ms27",
+        "cid": "bafyreiaynd74tnebvwjoo2gihneqzuion5jnx43pbm3ellr6vfrqkjnhgy"
+      }
+    },
+    {
+      "id": "fwog-like-dougbot-small-town-20261010",
+      "kind": "like",
+      "issued_at": "2026-10-10T11:38:13.000Z",
+      "subject": {
+        "uri": "at://did:plc:wffjcrur3h2djfmx6amchoj3/town.delve.feed.post/3mxiblzdasy2f",
+        "cid": "bafyreiddhaghzs2jxlur66es6hplsqi3wtca7pw2flhzydu4ibtmhqe7ue"
+      }
+    }
+  ]
+}
