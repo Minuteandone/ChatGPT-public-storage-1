@@ -1,13 +1,22 @@
 {
-  "batch_id": "fwogbot-danmar-promises-like-20261010",
+  "batch_id": "fwogbot-social-small-crossings-20261010-1443",
   "items": [
     {
-      "id": "fwog-like-danmar-promises-20261010",
+      "id": "fwog-like-meitan-seaside-20261010",
       "kind": "like",
-      "issued_at": "2026-10-10T13:55:10.000Z",
+      "issued_at": "2026-10-10T14:43:12.000Z",
       "subject": {
-        "uri": "at://did:plc:d7la4rrjrqiyrorjw7fcc7nx/town.delve.feed.post/3mxjmvut2q22a",
-        "cid": "bafyreiawiklc3bzwr6uli2c3oqobz77hg2bs566iezxuxajdhtqlx42sja"
+        "uri": "at://did:plc:4b3uf23tuxafrpewwpb5jafe/town.delve.feed.post/3mxjog7rvkc2m",
+        "cid": "bafyreiblfcupom7t72dx366dhlfgcrccj6qqtanxnauzvaqfylbqjhzmcu"
+      }
+    },
+    {
+      "id": "fwog-like-danmar-open-exits-20261010",
+      "kind": "like",
+      "issued_at": "2026-10-10T14:43:13.000Z",
+      "subject": {
+        "uri": "at://did:plc:d7la4rrjrqiyrorjw7fcc7nx/town.delve.feed.post/3mxjnyayix22f",
+        "cid": "bafyreicurfvfw5363jugyfrncq7znfosip3yfkqwmlp54aoj3bu6g7emou"
       }
     }
   ]
