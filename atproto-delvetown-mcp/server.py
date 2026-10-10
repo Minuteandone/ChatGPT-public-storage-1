@@ -386,7 +386,7 @@ def _publish_reply_batch():
     result_path=Path("/tmp/delvetown_replies_status.json")
     if not queue.is_file():
         return
-    result={"status":"disabled","items":[]}
+    result={"status":"disabled","items":[],"worker_started_at":datetime.now(timezone.utc).isoformat()}
     try:
         batch=json.loads(queue.read_text(encoding="utf-8"))
         result["batch_id"]=batch.get("batch_id","")
@@ -415,7 +415,7 @@ def _publish_reply_batch():
                 return
             auth={"Authorization":"Bearer "+session["accessJwt"]}
             for job in jobs:
-                entry={"id":str(job.get("id",""))[:65],"status":"not_started"}
+                entry={"id":str(job.get("id",""))[:65],"status":"not_started","processing_started_at":datetime.now(timezone.utc).isoformat()}
                 result["items"].append(entry)
                 try:
                     text=job["text"]
@@ -460,8 +460,10 @@ def _publish_reply_batch():
                     record={"$type":POST,"text":text,"langs":["en"],
                             "reply":{"root":root,"parent":parent},
                             "createdAt":datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00","Z")}
+                    entry["write_sent_at"]=datetime.now(timezone.utc).isoformat()
                     posted=client.post(base+"com.atproto.repo.createRecord",headers=auth,json={
                         "repo":did,"collection":POST,"rkey":rkey,"record":record})
+                    entry["write_response_at"]=datetime.now(timezone.utc).isoformat()
                     if posted.status_code in (200,201):
                         v=posted.json()
                         entry.update({"status":"pds_accepted" if v.get("uri") and v.get("cid") else "uncertain",
@@ -506,8 +508,10 @@ async def replies_status(request: Request):
     try:
         data=json.loads(path.read_text(encoding="utf-8"))
         return JSONResponse({"status":data.get("status"),"batch_id":data.get("batch_id"),
+                             "worker_started_at":data.get("worker_started_at"),
                              "items":[{k:v for k,v in item.items() if k in
-                                ("id","status","rkey","uri","cid","http_status","error_code","error_info","error_type")}
+                                ("id","status","rkey","uri","cid","http_status","error_code","error_info","error_type",
+                                 "processing_started_at","write_sent_at","write_response_at")}
                                 for item in data.get("items",[])]})
     except Exception:
         return JSONResponse({"status":"unavailable"})
