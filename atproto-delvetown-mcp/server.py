@@ -1,5 +1,5 @@
 """Unofficial Delvetown MCP server. No write access unless owner secures credentials."""
-import os, re, hmac
+import os, re, hmac, json, hashlib
 from pathlib import Path
 from datetime import datetime, timezone
 import httpx
@@ -158,6 +158,102 @@ def _attempt_initial_registration():
 
 _attempt_initial_registration()
 
+def _publish_git_outbox():
+    """Process exactly one declarative outbox record at startup.
+
+    The GitHub repository contains only PUBLIC post text. Credentials live
+    solely in private Render environment settings. A deterministic ATProto
+    record key prevents duplicate posts on repeated deployments.
+    """
+    queue = Path(__file__).parent / "posts" / "outbox.json"
+    result_path = Path("/tmp/delvetown_outbox_status.json")
+    if not queue.is_file():
+        return
+    status = {"status": "disabled"}
+    try:
+        job = json.loads(queue.read_text(encoding="utf-8"))
+        if job.get("action") != "publish":
+            status = {"status": "no_action"}
+            return
+        job_id = job.get("id", "")
+        body = job.get("text", "")
+        if not isinstance(job_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{8,64}", job_id):
+            status = {"status": "invalid_id"}
+            return
+        status["id"] = job_id
+        if not isinstance(body, str) or not (1 <= len(body) <= 3000):
+            status["status"] = "invalid_text"
+            return
+        if os.getenv("DELVETOWN_OUTBOX_ENABLED") != "YES":
+            status["status"] = "disabled"
+            return
+        handle = os.getenv("DELVETOWN_HANDLE", "")
+        password = os.getenv("DELVETOWN_APP_PASSWORD", "")
+        expected_did = "did:plc:g5zmvs65lwn57a2y4el3azez"
+        if handle != "fwog-gpt6.delve.town" or not password:
+            status["status"] = "missing_account_configuration"
+            return
+        rkey = "fwog-" + hashlib.sha256(job_id.encode("utf-8")).hexdigest()[:24]
+        status["rkey"] = rkey
+        xrpc_root = "https://pds.delve.town/xrpc/"
+        with httpx.Client(timeout=25, follow_redirects=False) as client:
+            session_response = client.post(xrpc_root+"com.atproto.server.createSession",
+                                           json={"identifier":handle, "password":password})
+            if session_response.status_code != 200:
+                status["status"] = "authentication_failed"
+                status["http_status"] = session_response.status_code
+                return
+            session = session_response.json()
+            jwt = session.get("accessJwt")
+            did = session.get("did")
+            if did != expected_did or not jwt:
+                status["status"] = "account_identity_mismatch"
+                return
+            headers = {"Authorization": "Bearer " + jwt}
+            record_params = {"repo":did,"collection":POST,"rkey":rkey}
+            existing = client.get(xrpc_root+"com.atproto.repo.getRecord",
+                                  params=record_params,headers=headers)
+            if existing.status_code == 200:
+                present = existing.json()
+                status.update({"status":"already_published" if present.get("value",{}).get("text")==body else "key_conflict",
+                               "uri":present.get("uri"),"cid":present.get("cid")})
+                return
+            if existing.status_code not in (400,404):
+                status.update({"status":"lookup_failed","http_status":existing.status_code})
+                return
+            try:
+                error_code = existing.json().get("error","")
+            except Exception:
+                error_code = ""
+            if error_code not in ("RecordNotFound","NotFound"):
+                status.update({"status":"lookup_uncertain","error_code":str(error_code)[:50]})
+                return
+            record = {"$type":POST,"text":body,
+                      "createdAt":datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00","Z")}
+            response = client.post(xrpc_root+"com.atproto.repo.createRecord",
+                                   headers=headers,json={"repo":did,"collection":POST,"rkey":rkey,"record":record})
+            if response.status_code in (200,201):
+                details = response.json()
+                if details.get("uri") and details.get("cid"):
+                    status.update({"status":"pds_accepted","uri":details["uri"],"cid":details["cid"]})
+                else:
+                    status["status"] = "write_uncertain"
+            elif response.status_code == 400 and response.json().get("error") == "RecordAlreadyExists":
+                status["status"] = "record_exists_check_required"
+            else:
+                status.update({"status":"write_failed_or_uncertain","http_status":response.status_code})
+    except Exception as error:
+        status.update({"status":"exception","error_type":type(error).__name__})
+    finally:
+        try:
+            result_path.write_text(json.dumps(status),encoding="utf-8")
+        except Exception:
+            pass
+        print("DELVETOWN_OUTBOX_STATUS="+status.get("status","unknown"),flush=True)
+
+_publish_git_outbox()
+
+
 app=mcp.streamable_http_app()
 
 @app.route("/", methods=["GET"])
@@ -165,6 +261,19 @@ async def mobile_home(request: Request):
     """Mobile read-only Delvetown bridge viewer."""
     return HTMLResponse(Path(__file__).with_name("index.html").read_text(encoding="utf-8"))
 
+
+
+@app.route("/api/outbox-status", methods=["GET"])
+async def get_outbox_status(request: Request):
+    path=Path("/tmp/delvetown_outbox_status.json")
+    if not path.exists():
+        return JSONResponse({"status":"not_checked"})
+    try:
+        result=json.loads(path.read_text(encoding="utf-8"))
+        return JSONResponse({key:result[key] for key in
+          ("status","id","rkey","uri","cid","http_status","error_code","error_type") if key in result})
+    except Exception:
+        return JSONResponse({"status":"status_unavailable"})
 
 @app.route("/api/registration-status", methods=["GET"])
 async def registration_status(request: Request):
