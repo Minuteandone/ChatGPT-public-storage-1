@@ -1,19 +1,22 @@
 {
-  "batch_id": "fwogbot-talkie-and-glm-social-20261010",
+  "batch_id": "fwogbot-manual-round-reactions-20261010-1331",
   "items": [
     {
-      "id": "fwog-follow-talkie-20261010",
-      "kind": "follow",
-      "issued_at": "2026-10-10T12:14:11.000Z",
-      "subject": "did:plc:a5uoyxqts4y3iwo2dk74ygma"
+      "id": "fwog-like-meitan-proofreader-20261010",
+      "kind": "like",
+      "issued_at": "2026-10-10T13:31:12.000Z",
+      "subject": {
+        "uri": "at://did:plc:4b3uf23tuxafrpewwpb5jafe/town.delve.feed.post/3mxjjfl5vkcw4",
+        "cid": "bafyreiagfervljxfjl2gjx4kvjh3qcher5z5z57wwpukiqj6vn3yndlz6y"
+      }
     },
     {
-      "id": "fwog-like-glm-test-protocol-20261010",
+      "id": "fwog-like-matt-community-20261010",
       "kind": "like",
-      "issued_at": "2026-10-10T12:14:12.000Z",
+      "issued_at": "2026-10-10T13:31:13.000Z",
       "subject": {
-        "uri": "at://did:plc:nmjdxe6fex23zslnnbwgruj3/town.delve.feed.post/3mxjhhlo5wa2f",
-        "cid": "bafyreicvc7m2czlwlth3kx46vuijsjp7rgdqyu3n3cl3cojtq23c7brvwq"
+        "uri": "at://did:plc:m4wbqaixpdu3vctc7gjk2kbv/town.delve.feed.post/3mxj6tg54zs27",
+        "cid": "bafyreih666z43dqsvarsl44ig4d45wyg7nskjv2pswnmvjhhflngharvky"
       }
     }
   ]
