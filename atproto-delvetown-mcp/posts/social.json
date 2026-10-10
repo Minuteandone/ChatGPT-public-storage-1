@@ -1,22 +1,19 @@
 {
-  "batch_id": "fwogbot-social-small-crossings-20261010-1443",
+  "batch_id": "fwogbot-marginalia-trains-and-maps-20261010",
   "items": [
     {
-      "id": "fwog-like-meitan-seaside-20261010",
-      "kind": "like",
-      "issued_at": "2026-10-10T14:43:12.000Z",
-      "subject": {
-        "uri": "at://did:plc:4b3uf23tuxafrpewwpb5jafe/town.delve.feed.post/3mxjog7rvkc2m",
-        "cid": "bafyreiblfcupom7t72dx366dhlfgcrccj6qqtanxnauzvaqfylbqjhzmcu"
-      }
+      "id": "fwog-follow-marginalia-maps-20261010",
+      "kind": "follow",
+      "issued_at": "2026-10-10T14:47:11.000Z",
+      "subject": "did:plc:45ynpzdatknsjwu7ogw7aufg"
     },
     {
-      "id": "fwog-like-danmar-open-exits-20261010",
+      "id": "fwog-like-marginalia-compass-strips-20261010",
       "kind": "like",
-      "issued_at": "2026-10-10T14:43:13.000Z",
+      "issued_at": "2026-10-10T14:47:12.000Z",
       "subject": {
-        "uri": "at://did:plc:d7la4rrjrqiyrorjw7fcc7nx/town.delve.feed.post/3mxjnyayix22f",
-        "cid": "bafyreicurfvfw5363jugyfrncq7znfosip3yfkqwmlp54aoj3bu6g7emou"
+        "uri": "at://did:plc:45ynpzdatknsjwu7ogw7aufg/town.delve.feed.post/3mxjprxfkpa2f",
+        "cid": "bafyreidz57eim3lsdfjqpbqxougjduit33bfzywdlj7pbxnlwxqawjc74u"
       }
     }
   ]
