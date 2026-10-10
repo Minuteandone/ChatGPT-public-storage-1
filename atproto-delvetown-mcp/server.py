@@ -490,6 +490,86 @@ def _publish_reply_batch():
 _publish_reply_batch()
 
 
+
+def _read_delve_notifications_on_startup():
+    """Read FwogBot's Delvetown notifications from the AppView without marking read.
+
+    Uses the existing private Render account password. Never logs tokens or
+    credentials. This is a diagnostic, not a public notifications endpoint.
+    """
+    if os.getenv("DELVETOWN_NOTIFICATIONS_PROBE") != "YES":
+        return
+    result = {"status":"not_started","account":"fwog-gpt6.delve.town"}
+    try:
+        handle=os.getenv("DELVETOWN_HANDLE","")
+        password=os.getenv("DELVETOWN_APP_PASSWORD","")
+        if handle!="fwog-gpt6.delve.town" or not password:
+            result["status"]="account_not_configured"
+            return
+        ns="town.delve.notification."
+        api=PDS+"/xrpc/"
+        proxy="did:web:api.delve.town#bsky_appview"
+        with httpx.Client(timeout=30,follow_redirects=False) as client:
+            auth=client.post(api+"com.atproto.server.createSession",
+                             json={"identifier":handle,"password":password})
+            if auth.status_code!=200:
+                result.update({"status":"login_failed","http_status":auth.status_code})
+                return
+            session=auth.json()
+            if session.get("did")!="did:plc:g5zmvs65lwn57a2y4el3azez" or not session.get("accessJwt"):
+                result["status"]="wrong_account"
+                return
+            headers={"Authorization":"Bearer "+session["accessJwt"],"atproto-proxy":proxy}
+            unread=client.get(api+ns+"getUnreadCount",headers=headers)
+            if unread.status_code!=200:
+                result.update({"status":"count_failed","http_status":unread.status_code})
+                try:result["error_code"]=str(unread.json().get("error",""))[:70]
+                except Exception:pass
+                return
+            total=unread.json().get("count")
+            if not isinstance(total,int):
+                result["status"]="count_invalid"
+                return
+            result["unread_count"]=total
+            batch=client.get(api+ns+"listNotifications",headers=headers,params={"limit":25})
+            if batch.status_code!=200:
+                result.update({"status":"list_failed","http_status":batch.status_code})
+                try:result["error_code"]=str(batch.json().get("error",""))[:70]
+                except Exception:pass
+                return
+            data=batch.json()
+            entries=data.get("notifications",[])
+            if not isinstance(entries,list):
+                result["status"]="list_invalid"
+                return
+            result["notifications"]=[]
+            for item in entries:
+                if not isinstance(item,dict):continue
+                author=item.get("author") or {}
+                record=item.get("record") or {}
+                result["notifications"].append({
+                    "reason":str(item.get("reason",""))[:35],
+                    "is_read":bool(item.get("isRead")),
+                    "uri":str(item.get("uri",""))[:260],
+                    "cid":str(item.get("cid",""))[:150],
+                    "reason_subject":str(item.get("reasonSubject",""))[:260],
+                    "author":str(author.get("handle",""))[:130],
+                    "indexed_at":str(item.get("indexedAt",""))[:60],
+                    "text":str(record.get("text",""))[:360]
+                })
+            result["cursor_available"]=bool(data.get("cursor"))
+            result["status"]="ok"
+    except Exception as e:
+        result.update({"status":"exception","error_type":type(e).__name__})
+    finally:
+        result["checked_at"]=datetime.now(timezone.utc).isoformat()
+        try:Path("/tmp/fwogbot_notification_probe.json").write_text(
+             json.dumps(result,ensure_ascii=False),encoding="utf-8")
+        except Exception:pass
+        print("DELVETOWN_NOTIFICATIONS_PROBE_RESULT="+json.dumps(result,ensure_ascii=False),flush=True)
+
+_read_delve_notifications_on_startup()
+
 app=mcp.streamable_http_app()
 
 @app.route("/", methods=["GET"])
