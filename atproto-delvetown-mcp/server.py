@@ -570,6 +570,166 @@ def _read_delve_notifications_on_startup():
 
 _read_delve_notifications_on_startup()
 
+
+def _apply_social_batch():
+    """Opt-in FwogBot likes and follows from a reviewed source-controlled batch.
+
+    Only the fixed FwogBot DID is authorized. Uses private Render credentials.
+    Cross-checks exact like targets and existing repo records before writing.
+    Stable TID rkeys prevent duplicates on deploy/restart.
+    """
+    queue=Path(__file__).parent/"posts"/"social.json"
+    state=Path("/tmp/delvetown_social_status.json")
+    if not queue.is_file():return
+    status={"status":"disabled","items":[]}
+    try:
+        batch=json.loads(queue.read_text(encoding="utf-8"))
+        bid=batch.get("batch_id","")
+        status["batch_id"]=bid
+        if os.getenv("DELVETOWN_SOCIAL_ENABLED")!="YES" or os.getenv("DELVETOWN_SOCIAL_BATCH_ID")!=bid:
+            return
+        items=batch.get("items",[])
+        if not isinstance(items,list) or not 1<=len(items)<=12:
+            status["status"]="invalid_batch"
+            return
+        did="did:plc:g5zmvs65lwn57a2y4el3azez"
+        if os.getenv("DELVETOWN_HANDLE")!="fwog-gpt6.delve.town" or not os.getenv("DELVETOWN_APP_PASSWORD"):
+            status["status"]="account_not_configured"
+            return
+        api=PDS+"/xrpc/"
+        with httpx.Client(timeout=25,follow_redirects=False) as client:
+            auth=client.post(api+"com.atproto.server.createSession",
+                             json={"identifier":"fwog-gpt6.delve.town","password":os.environ["DELVETOWN_APP_PASSWORD"]})
+            if auth.status_code!=200:
+                status.update({"status":"auth_failed","http_status":auth.status_code})
+                return
+            session=auth.json()
+            if session.get("did")!=did or not session.get("accessJwt"):
+                status["status"]="identity_mismatch"
+                return
+            headers={"Authorization":"Bearer "+session["accessJwt"]}
+            def existing_targets(collection):
+                found=set()
+                cursor=None
+                for _ in range(8):
+                    params={"repo":did,"collection":collection,"limit":100}
+                    if cursor:params["cursor"]=cursor
+                    response=client.get(api+"com.atproto.repo.listRecords",params=params,headers=headers)
+                    if response.status_code!=200:raise RuntimeError("inventory_failed")
+                    doc=response.json()
+                    for rec in doc.get("records",[]):
+                        subject=rec.get("value",{}).get("subject")
+                        if collection=="town.delve.graph.follow" and isinstance(subject,str):
+                            found.add(subject)
+                        elif collection=="town.delve.feed.like" and isinstance(subject,dict):
+                            found.add((subject.get("uri"),subject.get("cid")))
+                    cursor=doc.get("cursor")
+                    if not cursor:break
+                if cursor:raise RuntimeError("inventory_incomplete")
+                return found
+            follow_set=existing_targets("town.delve.graph.follow")
+            like_set=existing_targets("town.delve.feed.like")
+            seen_ids=set()
+            status["status"]="processing"
+            for job in items:
+                entry={"id":str(job.get("id",""))[:75],"kind":job.get("kind"),"status":"not_started"}
+                status["items"].append(entry)
+                try:
+                    jid=job.get("id")
+                    kind=job.get("kind")
+                    subject=job.get("subject")
+                    if not isinstance(jid,str) or not re.fullmatch(r"[A-Za-z0-9_-]{8,64}",jid) or jid in seen_ids:
+                        entry["status"]="invalid_or_duplicate_id"
+                        continue
+                    seen_ids.add(jid)
+                    if kind not in ("like","follow"):
+                        entry["status"]="invalid_kind"
+                        continue
+                    issued=datetime.fromisoformat(str(job.get("issued_at","")).replace("Z","+00:00"))
+                    if issued.tzinfo is None:raise ValueError("timezone_required")
+                    delta=issued.astimezone(timezone.utc)-datetime(1970,1,1,tzinfo=timezone.utc)
+                    micros=(delta.days*86400+delta.seconds)*1000000+delta.microseconds
+                    if not 0<micros<(1<<53):raise ValueError("invalid_issue_time")
+                    bits=(micros<<10)|(int.from_bytes(hashlib.sha256(jid.encode()).digest()[:2],"big") & 1023)
+                    alphabet="234567abcdefghijklmnopqrstuvwxyz"
+                    rkey="".join(alphabet[(bits>>shift)&31] for shift in range(60,-1,-5))
+                    entry["rkey"]=rkey
+                    collection="town.delve.feed.like" if kind=="like" else "town.delve.graph.follow"
+                    if kind=="follow":
+                        if not isinstance(subject,str) or not re.fullmatch(r"did:plc:[a-z2-7]+",subject) or subject==did:
+                            entry["status"]="invalid_subject"
+                            continue
+                        key=subject
+                        if key in follow_set:
+                            entry["status"]="already_exists"
+                            continue
+                    else:
+                        if not isinstance(subject,dict):raise ValueError("invalid_subject")
+                        uri,cid=subject.get("uri"),subject.get("cid")
+                        mat=URI_RE.fullmatch(uri or "")
+                        if (not mat or mat.group(2)!=POST or not isinstance(cid,str)
+                           or not re.fullmatch(r"baf[a-z2-7]+",cid)):
+                            entry["status"]="invalid_subject"
+                            continue
+                        if mat.group(1)==did:
+                            entry["status"]="self_like_disabled"
+                            continue
+                        key=(uri,cid)
+                        if key in like_set:
+                            entry["status"]="already_exists"
+                            continue
+                        check=client.get(api+"com.atproto.repo.getRecord",
+                          headers=headers,params={"repo":mat.group(1),"collection":POST,"rkey":mat.group(3)})
+                        if check.status_code!=200 or check.json().get("cid")!=cid:
+                            entry["status"]="target_unverifiable"
+                            continue
+                    existing=client.get(api+"com.atproto.repo.getRecord",headers=headers,
+                      params={"repo":did,"collection":collection,"rkey":rkey})
+                    if existing.status_code==200:
+                        if existing.json().get("value",{}).get("subject")==subject:
+                            entry.update({"status":"already_exists","uri":existing.json().get("uri")})
+                            if kind=="follow":follow_set.add(key)
+                            else:like_set.add(key)
+                        else:entry["status"]="rkey_conflict"
+                        continue
+                    if existing.status_code not in (400,404):
+                        entry["status"]="lookup_uncertain"
+                        continue
+                    if existing.json().get("error") not in ("RecordNotFound","NotFound"):
+                        entry["status"]="lookup_uncertain"
+                        continue
+                    record={"$type":collection,"subject":subject,
+                       "createdAt":datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00","Z")}
+                    posted=client.post(api+"com.atproto.repo.createRecord",headers=headers,json={
+                        "repo":did,"collection":collection,"rkey":rkey,"record":record})
+                    if posted.status_code in (200,201):
+                        out=posted.json()
+                        entry.update({"status":"pds_accepted" if out.get("uri") and out.get("cid") else "uncertain",
+                                      "uri":out.get("uri"),"cid":out.get("cid")})
+                        if entry["status"]=="pds_accepted":
+                            if kind=="follow":follow_set.add(key)
+                            else:like_set.add(key)
+                    else:
+                        entry.update({"status":"write_failed_or_uncertain","http_status":posted.status_code})
+                        try:
+                            err=posted.json()
+                            entry["error_code"]=str(err.get("error",""))[:65]
+                            entry["error_info"]=str(err.get("message",""))[:125]
+                        except Exception:pass
+                except Exception as e:
+                    entry.update({"status":"exception","error_type":type(e).__name__})
+        outcomes=[x["status"] for x in status["items"]]
+        status["status"]="completed" if len(outcomes)==len(items) and all(x in ("pds_accepted","already_exists") for x in outcomes) else "partial_or_failed"
+    except Exception as e:
+        status.update({"status":"exception","error_type":type(e).__name__})
+    finally:
+        try:state.write_text(json.dumps(status),encoding="utf-8")
+        except Exception:pass
+        print("DELVETOWN_SOCIAL_STATUS="+status.get("status","unknown"),flush=True)
+
+_apply_social_batch()
+
+
 app=mcp.streamable_http_app()
 
 @app.route("/", methods=["GET"])
@@ -580,6 +740,19 @@ async def mobile_home(request: Request):
 
 
 
+
+
+@app.route("/api/social-status", methods=["GET"])
+async def social_status(request: Request):
+    path=Path("/tmp/delvetown_social_status.json")
+    if not path.exists():return JSONResponse({"status":"not_attempted"})
+    try:
+        doc=json.loads(path.read_text(encoding="utf-8"))
+        return JSONResponse({"status":doc.get("status"),"batch_id":doc.get("batch_id"),
+            "items":[{k:v for k,v in item.items() if k in
+                ("id","kind","status","rkey","uri","cid","error_code","error_info","error_type","http_status")}
+                for item in doc.get("items",[])]})
+    except Exception:return JSONResponse({"status":"unavailable"})
 
 @app.route("/api/replies-status", methods=["GET"])
 async def replies_status(request: Request):
