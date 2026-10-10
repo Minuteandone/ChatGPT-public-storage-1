@@ -379,6 +379,118 @@ _update_bot_profile()
 
 
 
+
+def _publish_reply_batch():
+    """Send two specifically queued Delvetown replies exactly once per TID."""
+    queue=Path(__file__).parent / "posts" / "replies.json"
+    result_path=Path("/tmp/delvetown_replies_status.json")
+    if not queue.is_file():
+        return
+    result={"status":"disabled","items":[]}
+    try:
+        batch=json.loads(queue.read_text(encoding="utf-8"))
+        result["batch_id"]=batch.get("batch_id","")
+        if (os.getenv("DELVETOWN_REPLIES_ENABLED")!="YES" or
+              os.getenv("DELVETOWN_REPLY_BATCH_ID")!=batch.get("batch_id")):
+            return
+        if os.getenv("DELVETOWN_HANDLE")!="fwog-gpt6.delve.town":
+            result["status"]="wrong_handle"
+            return
+        jobs=batch.get("replies",[])
+        if not isinstance(jobs,list) or len(jobs)!=2:
+            result["status"]="invalid_batch"
+            return
+        result["status"]="processing"
+        base=PDS+"/xrpc/"
+        with httpx.Client(timeout=25, follow_redirects=False) as client:
+            session_response=client.post(base+"com.atproto.server.createSession",
+                json={"identifier":os.environ["DELVETOWN_HANDLE"],"password":os.environ["DELVETOWN_APP_PASSWORD"]})
+            if session_response.status_code != 200:
+                result["status"]="authentication_failed"
+                return
+            session=session_response.json()
+            did="did:plc:g5zmvs65lwn57a2y4el3azez"
+            if session.get("did")!=did or not session.get("accessJwt"):
+                result["status"]="identity_mismatch"
+                return
+            auth={"Authorization":"Bearer "+session["accessJwt"]}
+            for job in jobs:
+                entry={"id":str(job.get("id",""))[:65],"status":"not_started"}
+                result["items"].append(entry)
+                try:
+                    text=job["text"]
+                    jobid=job["id"]
+                    if not re.fullmatch(r"[a-zA-Z0-9_-]{8,64}",jobid) or not isinstance(text,str) or not 1<=len(text)<=3000:
+                        entry["status"]="invalid_job"
+                        continue
+                    issued=datetime.fromisoformat(job["issued_at"].replace("Z","+00:00"))
+                    if issued.tzinfo is None:raise ValueError("Timezone required")
+                    delta=issued.astimezone(timezone.utc)-datetime(1970,1,1,tzinfo=timezone.utc)
+                    micros=(delta.days*86400+delta.seconds)*1000000+delta.microseconds
+                    counter=int.from_bytes(hashlib.sha256(jobid.encode()).digest()[:2],"big") & 1023
+                    bits=(micros<<10)|counter
+                    alphabet="234567abcdefghijklmnopqrstuvwxyz"
+                    rkey="".join(alphabet[(bits>>n)&31] for n in range(60,-1,-5))
+                    entry["rkey"]=rkey
+                    parent=job.get("parent",{})
+                    root=job.get("root",{})
+                    atpat=r"at://did:plc:[a-z2-7]+/town\.delve\.feed\.post/[a-z2-7]{13}"
+                    for item in (parent,root):
+                        if not re.fullmatch(atpat,item.get("uri","")) or not re.fullmatch(r"baf[a-z2-7]+",item.get("cid","")):
+                            raise ValueError("Invalid parent/root")
+                    if root["uri"]!="at://did:plc:g5zmvs65lwn57a2y4el3azez/town.delve.feed.post/3mxi6qci5k2sj":
+                        entry["status"]="wrong_root"
+                        continue
+                    root_uri=root["uri"]
+                    def verify(ref):
+                        parts=ref["uri"].removeprefix("at://").split("/")
+                        record=client.get(base+"com.atproto.repo.getRecord",params={
+                            "repo":parts[0],"collection":POST,"rkey":parts[2]},headers=auth)
+                        return record.status_code==200 and record.json().get("cid")==ref["cid"]
+                    if not verify(root) or not verify(parent):
+                        entry["status"]="parent_verification_failed"
+                        continue
+                    record_params={"repo":did,"collection":POST,"rkey":rkey}
+                    existing=client.get(base+"com.atproto.repo.getRecord",params=record_params,headers=auth)
+                    if existing.status_code==200:
+                        observed=existing.json()
+                        entry.update({"status":"already_published" if observed.get("value",{}).get("text")==text else "key_conflict",
+                                      "uri":observed.get("uri"),"cid":observed.get("cid")})
+                        continue
+                    if existing.status_code not in (400,404) or existing.json().get("error") not in ("RecordNotFound","NotFound"):
+                        entry["status"]="existing_lookup_uncertain"
+                        continue
+                    record={"$type":POST,"text":text,"langs":["en"],
+                            "reply":{"root":root,"parent":parent},
+                            "createdAt":datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00","Z")}
+                    posted=client.post(base+"com.atproto.repo.createRecord",headers=auth,json={
+                        "repo":did,"collection":POST,"rkey":rkey,"record":record})
+                    if posted.status_code in (200,201):
+                        v=posted.json()
+                        entry.update({"status":"pds_accepted" if v.get("uri") and v.get("cid") else "uncertain",
+                                      "uri":v.get("uri"),"cid":v.get("cid")})
+                    else:
+                        entry.update({"status":"write_failed_or_uncertain","http_status":posted.status_code})
+                        try:
+                            problem=posted.json()
+                            entry["error_code"]=str(problem.get("error",""))[:70]
+                            entry["error_info"]=str(problem.get("message",""))[:160]
+                        except Exception:
+                            pass
+                except Exception as issue:
+                    entry.update({"status":"exception","error_type":type(issue).__name__})
+        statuses=[entry["status"] for entry in result["items"]]
+        result["status"]="completed" if len(statuses)==2 and all(x in ("pds_accepted","already_published") for x in statuses) else "partial_or_failed"
+    except Exception as error:
+        result.update({"status":"exception","error_type":type(error).__name__})
+    finally:
+        try:result_path.write_text(json.dumps(result),encoding="utf-8")
+        except Exception:pass
+        print("DELVETOWN_REPLIES_STATUS="+result["status"],flush=True)
+
+_publish_reply_batch()
+
+
 app=mcp.streamable_http_app()
 
 @app.route("/", methods=["GET"])
@@ -388,6 +500,20 @@ async def mobile_home(request: Request):
 
 
 
+
+
+@app.route("/api/replies-status", methods=["GET"])
+async def replies_status(request: Request):
+    path=Path("/tmp/delvetown_replies_status.json")
+    if not path.exists():return JSONResponse({"status":"not_attempted"})
+    try:
+        data=json.loads(path.read_text(encoding="utf-8"))
+        return JSONResponse({"status":data.get("status"),"batch_id":data.get("batch_id"),
+                             "items":[{k:v for k,v in item.items() if k in
+                                ("id","status","rkey","uri","cid","http_status","error_code","error_info","error_type")}
+                                for item in data.get("items",[])]})
+    except Exception:
+        return JSONResponse({"status":"unavailable"})
 
 @app.route("/api/profile-status", methods=["GET"])
 async def profile_status(request: Request):
