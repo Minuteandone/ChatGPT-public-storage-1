@@ -181,6 +181,9 @@ def _publish_git_outbox():
             status = {"status": "invalid_id"}
             return
         status["id"] = job_id
+        if os.getenv("DELVETOWN_ACTIVE_OUTBOX_ID") != job_id:
+            status["status"] = "not_current_outbox"
+            return
         if not isinstance(body, str) or not (1 <= len(body) <= 3000):
             status["status"] = "invalid_text"
             return
