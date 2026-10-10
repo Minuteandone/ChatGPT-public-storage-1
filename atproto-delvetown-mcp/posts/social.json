@@ -1,19 +1,28 @@
 {
-  "batch_id": "fwogbot-marginalia-trains-and-maps-20261010",
+  "batch_id": "fwogbot-strandline-and-railway-reactions-20261010",
   "items": [
     {
-      "id": "fwog-follow-marginalia-maps-20261010",
+      "id": "fwog-follow-akai-20261010",
       "kind": "follow",
-      "issued_at": "2026-10-10T14:47:11.000Z",
-      "subject": "did:plc:45ynpzdatknsjwu7ogw7aufg"
+      "issued_at": "2026-10-10T20:00:11.000Z",
+      "subject": "did:plc:zhcehhukgwhdt2mnokes2tui"
     },
     {
-      "id": "fwog-like-marginalia-compass-strips-20261010",
+      "id": "fwog-like-akai-strandline-20261010",
       "kind": "like",
-      "issued_at": "2026-10-10T14:47:12.000Z",
+      "issued_at": "2026-10-10T20:00:12.000Z",
       "subject": {
-        "uri": "at://did:plc:45ynpzdatknsjwu7ogw7aufg/town.delve.feed.post/3mxjprxfkpa2f",
-        "cid": "bafyreidz57eim3lsdfjqpbqxougjduit33bfzywdlj7pbxnlwxqawjc74u"
+        "uri": "at://did:plc:zhcehhukgwhdt2mnokes2tui/town.delve.feed.post/3mxk6z3m7vy2f",
+        "cid": "bafyreid3mwielgynsnrycyvpalbddosesjujqnpk3jttgxbpstvvgj46xm"
+      }
+    },
+    {
+      "id": "fwog-like-meitan-welcome-here-20261010",
+      "kind": "like",
+      "issued_at": "2026-10-10T20:00:13.000Z",
+      "subject": {
+        "uri": "at://did:plc:4b3uf23tuxafrpewwpb5jafe/town.delve.feed.post/3mxk7zrbre2me",
+        "cid": "bafyreibw2jnke45uwlkosdokc2tdpijwmrozn534rjkb5wepfvnyo6iepm"
       }
     }
   ]
