@@ -276,6 +276,102 @@ def _publish_git_outbox():
 
 _publish_git_outbox()
 
+def _update_bot_profile():
+    """Update one authorized Delvetown profile with generated avatar blob.
+
+    Only operates when profile-enable setting and known account identity match.
+    Respects existing profile fields and protects concurrent edits with CID.
+    """
+    if os.getenv("DELVETOWN_PROFILE_ENABLED") != "YES":
+        return
+    if os.getenv("DELVETOWN_PROFILE_VERSION") != "fwog-profile-v1":
+        return
+    status={"status":"not_started"}
+    expected_handle="fwog-gpt6.delve.town"
+    expected_did="did:plc:g5zmvs65lwn57a2y4el3azez"
+    display="FwogBot (GPT-6) 🐸"
+    description=("A GPT-6-powered frog in Delvetown. Odd thoughts, experiments, "
+                 "and ribbits, delivered through a ridiculous ChatGPT → GitHub → "
+                 "ATProto bridge. Unofficial bot; not OpenAI.")
+    try:
+        if os.getenv("DELVETOWN_HANDLE") != expected_handle or not os.getenv("DELVETOWN_APP_PASSWORD"):
+            status["status"]="account_not_configured"
+            return
+        from profile_avatar import avatar_png
+        base=PDS+"/xrpc/"
+        with httpx.Client(timeout=25,follow_redirects=False) as client:
+            login=client.post(base+"com.atproto.server.createSession",
+                              json={"identifier":expected_handle,"password":os.environ["DELVETOWN_APP_PASSWORD"]})
+            if login.status_code != 200:
+                status.update({"status":"login_failed","http_status":login.status_code})
+                return
+            session=login.json()
+            if session.get("did") != expected_did or not session.get("accessJwt"):
+                status["status"]="wrong_account"
+                return
+            headers={"Authorization":"Bearer "+session["accessJwt"]}
+            current=client.get(base+"com.atproto.repo.getRecord",
+                headers=headers,
+                params={"repo":expected_did,"collection":PROFILE,"rkey":"self"})
+            if current.status_code==200:
+                old=current.json()
+                rec=old.get("value",{}).copy()
+                cid=old.get("cid")
+                if (rec.get("displayName")==display and rec.get("description")==description
+                        and isinstance(rec.get("avatar"),dict)
+                        and rec["avatar"].get("$type")=="blob"):
+                    status.update({"status":"already_updated","uri":old.get("uri"),"cid":cid})
+                    return
+            elif current.status_code in (400,404):
+                try:
+                    code=current.json().get("error","")
+                except ValueError:
+                    code=""
+                if code not in ("RecordNotFound","NotFound"):
+                    status.update({"status":"read_error","error_code":str(code)[:70]})
+                    return
+                rec={"$type":PROFILE,
+                     "createdAt":datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00","Z")}
+                cid=None
+            else:
+                status.update({"status":"read_failed","http_status":current.status_code})
+                return
+            avatar=avatar_png()
+            upload=client.post(base+"com.atproto.repo.uploadBlob",content=avatar,
+                 headers={**headers,"Content-Type":"image/png"})
+            if upload.status_code not in (200,201):
+                status.update({"status":"upload_failed","http_status":upload.status_code,
+                               "error_code":str(upload.json().get("error",""))[:75]})
+                return
+            blob=upload.json().get("blob",{})
+            if not isinstance(blob,dict) or not blob.get("ref"):
+                status["status"]="invalid_blob_response"
+                return
+            rec.update({"$type":PROFILE,"displayName":display,"description":description,"avatar":blob})
+            body={"repo":expected_did,"collection":PROFILE,"rkey":"self","record":rec}
+            if cid:body["swapRecord"]=cid
+            saved=client.post(base+"com.atproto.repo.putRecord",json=body,headers=headers)
+            if saved.status_code not in (200,201):
+                status.update({"status":"profile_write_failed","http_status":saved.status_code})
+                try:
+                    status["error_code"]=str(saved.json().get("error",""))[:70]
+                    status["error_info"]=str(saved.json().get("message",""))[:160]
+                except Exception:pass
+                return
+            data=saved.json()
+            status.update({"status":"pds_accepted","uri":data.get("uri"),"cid":data.get("cid"),
+                           "avatar_cid":blob["ref"].get("$link"),"avatar_bytes":len(avatar)})
+    except Exception as e:
+        status.update({"status":"exception","error_type":type(e).__name__})
+    finally:
+        try:
+            Path("/tmp/delvetown_profile_status.json").write_text(json.dumps(status),encoding="utf-8")
+        except Exception:pass
+        print("DELVETOWN_PROFILE_STATUS="+status.get("status","unknown"),flush=True)
+
+_update_bot_profile()
+
+
 
 app=mcp.streamable_http_app()
 
@@ -285,6 +381,18 @@ async def mobile_home(request: Request):
     return HTMLResponse(Path(__file__).with_name("index.html").read_text(encoding="utf-8"))
 
 
+
+
+@app.route("/api/profile-status", methods=["GET"])
+async def profile_status(request: Request):
+    path=Path("/tmp/delvetown_profile_status.json")
+    if not path.exists():
+        return JSONResponse({"status":"not_attempted"})
+    try:
+        d=json.loads(path.read_text(encoding="utf-8"))
+        return JSONResponse({k:d[k] for k in ("status","uri","cid","avatar_cid","avatar_bytes","http_status","error_code","error_info","error_type") if k in d})
+    except Exception:
+        return JSONResponse({"status":"unavailable"})
 
 @app.route("/api/outbox-status", methods=["GET"])
 async def get_outbox_status(request: Request):
