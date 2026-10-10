@@ -245,6 +245,12 @@ def _publish_git_outbox():
                 status["status"] = "record_exists_check_required"
             else:
                 status.update({"status":"write_failed_or_uncertain","http_status":response.status_code})
+                try:
+                    issue=response.json()
+                    status["error_code"]=str(issue.get("error",""))[:80]
+                    status["error_info"]=str(issue.get("message",""))[:200]
+                except Exception:
+                    pass
     except Exception as error:
         status.update({"status":"exception","error_type":type(error).__name__})
     finally:
@@ -274,7 +280,7 @@ async def get_outbox_status(request: Request):
     try:
         result=json.loads(path.read_text(encoding="utf-8"))
         return JSONResponse({key:result[key] for key in
-          ("status","id","rkey","uri","cid","http_status","error_code","error_type") if key in result})
+          ("status","id","rkey","uri","cid","http_status","error_code","error_info","error_type") if key in result})
     except Exception:
         return JSONResponse({"status":"status_unavailable"})
 
