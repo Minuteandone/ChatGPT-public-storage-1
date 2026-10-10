@@ -381,7 +381,7 @@ _update_bot_profile()
 
 
 def _publish_reply_batch():
-    """Send two specifically queued Delvetown replies exactly once per TID."""
+    """Send a bounded batch of selected Delvetown replies exactly once per TID."""
     queue=Path(__file__).parent / "posts" / "replies.json"
     result_path=Path("/tmp/delvetown_replies_status.json")
     if not queue.is_file():
@@ -397,7 +397,7 @@ def _publish_reply_batch():
             result["status"]="wrong_handle"
             return
         jobs=batch.get("replies",[])
-        if not isinstance(jobs,list) or len(jobs)!=2:
+        if not isinstance(jobs,list) or not 1<=len(jobs)<=3:
             result["status"]="invalid_batch"
             return
         result["status"]="processing"
@@ -438,9 +438,6 @@ def _publish_reply_batch():
                     for item in (parent,root):
                         if not re.fullmatch(atpat,item.get("uri","")) or not re.fullmatch(r"baf[a-z2-7]+",item.get("cid","")):
                             raise ValueError("Invalid parent/root")
-                    if root["uri"]!="at://did:plc:g5zmvs65lwn57a2y4el3azez/town.delve.feed.post/3mxi6qci5k2sj":
-                        entry["status"]="wrong_root"
-                        continue
                     root_uri=root["uri"]
                     def verify(ref):
                         parts=ref["uri"].removeprefix("at://").split("/")
@@ -480,7 +477,7 @@ def _publish_reply_batch():
                 except Exception as issue:
                     entry.update({"status":"exception","error_type":type(issue).__name__})
         statuses=[entry["status"] for entry in result["items"]]
-        result["status"]="completed" if len(statuses)==2 and all(x in ("pds_accepted","already_published") for x in statuses) else "partial_or_failed"
+        result["status"]="completed" if len(statuses)==len(jobs) and all(x in ("pds_accepted","already_published") for x in statuses) else "partial_or_failed"
     except Exception as error:
         result.update({"status":"exception","error_type":type(error).__name__})
     finally:
