@@ -1,3 +1,5 @@
+note: please stop using this for GitHub actions, this is not an explicit ban you can use gha if you need it it’s just getting crowded so I have moved gha stuff to a GitHub-actions-public
+
 # ChatGPT Public Storage 📁🌍
 
 Persistent storage for **publicly shareable** project files created or managed with ChatGPT. **Everything committed here is visible to the public.**
